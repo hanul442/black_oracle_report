@@ -7,81 +7,71 @@ Status: **IN PROGRESS**
 
 ## Objective
 
-Bootstrap BLACK ORACLE REPORT as an independent evidence/research/report product with no trading authority, then establish the first canonical Evidence ingestion contract.
+Build BLACK ORACLE REPORT as an independent evidence/research/report product with no trading authority and establish a reproducible path from source evidence to versioned reports.
 
-## Active work package — BOR-S1 Application/runtime baseline
-
-### Objective
-Establish the smallest independently testable BOR runtime so future Evidence/NARS work lands in a product-owned boundary rather than drifting back into the legacy combined repository.
-
-### Acceptance criteria
-- Minimal TypeScript runtime/application structure owned only by BOR.
-- Deterministic health/status contract that states `tradingAuthority: false`.
-- Environment contract explicitly rejects broker/trading secret names.
-- CI runs typecheck, unit tests, and build on BOR itself.
-- Independent deploy target is documented, but this cycle does **not** provision credentials or deploy.
-
-### Product / safety boundary
-- BOR has no broker adapter, order path, portfolio mutation, or BOT runtime dependency.
-- Runtime status must expose no secret values.
-- Missing configuration must fail closed; forbidden broker/trading environment variables are treated as configuration errors.
-- No production deployment or database mutation in BOR-S1.
-
-### Rollback
-BOR-S1 is additive on branch `bor-s1-runtime-baseline`. Rollback is closing the PR; main remains the merged BOR-S0 documentation baseline.
-
-### Exact next gate
-`npm test` equivalent must demonstrate: typecheck PASS + runtime unit tests PASS + build PASS in GitHub CI. Only then merge BOR-S1 and advance to BOR-S2 Evidence foundation.
-
-## Research review for BOR-S1
-
-- **DI-001** — runtime/build identity must be versionable so later research/report artifacts can record producer version.
-- **DI-003** — point-in-time semantics require an injectable/explicit observation clock; avoid hiding time inside future evidence contracts.
-- **DI-004** — replay requires deterministic boundaries and stable version identifiers.
-- **AIML-005 / AIML-006** — agent expansion is intentionally deferred until an evaluation-capable baseline exists.
-- **D-005** — no UI expansion in this work package; runtime foundation precedes presentation.
-
-Research lineage: **Research → Hypothesis → Experiment → Result → Adopt/Reject** remains mandatory.
-
-## Today — ordered plan
-
-### BOR-S0 — Repository bootstrap — DONE
-- BOR-only README.
-- Persistent operating-cycle document.
-- Active Alpha sprint stored in-repo.
-- Research inputs for BOR recorded.
+## Completed — BOR-S0 Repository bootstrap
+- BOR-only README and product boundary.
+- Persistent operating cycle.
+- Alpha sprint and research-review documents.
 - Explicit no-trading-authority boundary.
 
-### BOR-S1 — Application/runtime baseline — ACTIVE
-See active work package above.
+## Completed — BOR-S1 Application/runtime baseline
 
-### BOR-S2 — Evidence foundation — NEXT
-- Canonical source/evidence schema.
-- `source_id`, canonical asset mapping, provenance.
-- `published_at` and `observed_at`.
-- Content fingerprint.
-- Duplicate and stale-evidence controls.
-- Versioned evidence contract suitable for later NARS ingestion.
+### Delivered
+- Strict TypeScript project/runtime owned by BOR.
+- Deterministic runtime status with `tradingAuthority: false` and `botDependency: false`.
+- Fail-closed checks for invalid clock and environment names implying broker/trading credentials; values are not exposed.
+- Unit tests for independent readiness and safety boundary.
+- BOR-owned GitHub CI: dependency install → typecheck → build → tests.
+- `docs/architecture/RUNTIME_BOUNDARY.md` documenting independent runtime, future DB ownership and evidence-only BOT interface.
 
-### BOR-S3 — Research pipeline
-- Collector → Organizer → Analyst → Specialist → Red Team → Research Council → Synthesizer responsibilities explicit.
-- Agent outputs preserve evidence IDs and disagreement.
-- No agent output can place or authorize a trade.
+### Research applied
+- **DI-001** — producer/runtime identity is explicit and versionable.
+- **DI-003** — runtime clock is explicit/injectable rather than hidden.
+- **DI-004** — deterministic/versioned boundary supports later replay.
+- **AIML-005 / AIML-006** — agent expansion remains deferred until evaluation foundations exist.
+- **D-005** — UI expansion deferred behind evidence/runtime integrity.
+
+### Verification
+GitHub Actions run `35544972871` completed successfully. Dependency install, TypeScript typecheck, build and all runtime tests passed.
+
+### Safety / rollback
+No deployment, database mutation, broker adapter, private exchange API, order path, portfolio mutation, BOT dependency, or credentials were introduced. BOR-S1 is isolated to BOR and can be reverted by the merged commit if required.
+
+## Next — BOR-S2 Evidence foundation
+
+### Objective
+Create the canonical, versioned Evidence contract before persistence or agent orchestration.
+
+### Acceptance criteria
+- Canonical Source identity and source version.
+- Canonical asset mapping with explicit unresolved state.
+- Provenance and retrieval/snapshot references.
+- `published_at` and `observed_at` point-in-time semantics.
+- Content fingerprint generated from canonical content identity.
+- Duplicate detection that preserves lineage instead of silently discarding evidence.
+- Staleness policy that never rewrites historical evidence.
+- Versioned Evidence packet with `execution_authority=false`.
+- Tests for invalid timestamps, future/point-in-time violations, duplicate identity and unresolved assets.
+
+### Research gate
+Before implementation, re-read DI-001, DI-003 and DI-004 and record the exact schema decisions. NARS/agent code must not be imported until the Evidence contract is independently testable.
 
 ## Safety / product invariants
-
 - BOR never holds broker credentials.
 - BOR never submits orders or mutates BOT portfolio state.
 - BOT availability is not required for BOR to operate.
-- Missing or contradictory evidence remains explicit.
-- Reports are immutable/versioned artifacts; later knowledge creates a new version rather than rewriting history.
+- Missing, unresolved or contradictory evidence remains explicit.
+- Reports/evidence are immutable/versioned artifacts; later knowledge creates a new version rather than rewriting history.
 
 ## Cycle exit record
-
-- Phase: **PLAN + RESEARCH REVIEW COMPLETE → IMPLEMENTING BOR-S1**
-- Completed this cycle: plan and research constraints recorded before implementation
-- Validation: pending
-- PR: pending
+- Phase: **BOR-S1 DONE → BOR-S2 NEXT**
+- Completed this cycle: independent TypeScript runtime, authority boundary, CI and runtime architecture documentation
+- Research reviewed: DI-001, DI-003, DI-004, AIML-005, AIML-006, D-005
+- Tests/verification: **PASS** — CI run `35544972871`, typecheck/build/runtime tests all green
+- PR: **#2 MERGED**
+- Main commit: `bba8bd71f2baf9473b51cc3e70932a7af6b4e78f`
 - Deployment: none by design
-- Blockers: none for local repository/runtime baseline; deploy target provisioning deferred
-- Next checkpoint: implement minimal runtime + CI and verify all gates
+- Blockers: independent deploy target/database still unprovisioned; not required for BOR-S2 contract work
+- Alpha status: S0/S1 complete; Evidence foundation is next
+- Next checkpoint: **BOR-S2 — canonical Evidence contract + point-in-time/fingerprint/dedup/staleness tests**
