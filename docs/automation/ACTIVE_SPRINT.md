@@ -58,10 +58,13 @@ Acceptance criteria:
 
 ## Cycle exit record
 
-- Phase: PLAN / RESEARCH REVIEW
-- Completed this cycle: repository bootstrap documentation
-- Validation: documentation verification pending
-- PR: pending
+- Phase: **BOR-S0 DONE → BOR-S1 NEXT**
+- Completed this cycle: independent BOR README, persistent operating cycle, 2026-09-21 sprint plan, research review
+- Research reviewed: DI-001, DI-003, DI-004, AIML-005, AIML-006, D-005
+- Validation: documentation and merged-repository verification complete; CI does not exist yet
+- PR: **#1 MERGED**
+- Main commit: `632b1b2ac6b2634b008bd0d62451ac79a215c8af`
 - Deployment: none
-- Blockers: app/runtime/CI not bootstrapped yet
-- Next checkpoint: BOR-S1 — minimal independent runtime + CI baseline
+- Slack report: https://hanullab.slack.com/archives/C0C2Y1RJJP3/p1789945496607259
+- Blockers: app/runtime/CI/database not bootstrapped yet
+- Next checkpoint: **BOR-S1 — minimal independent runtime + CI baseline**
