@@ -1,7 +1,7 @@
 # BOR-S14 Report Consistency Gate Research Review
 
 Date: 2026-09-21
-Status: EXPERIMENT
+Status: ADOPT
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
@@ -28,7 +28,7 @@ Implement `bor.report-consistency.v1` with deterministic issue codes and PASS/FA
 Verification only. No evidence synthesis/repair, broker credential, order, BOT dependency, Risk bypass, provider call, publication, database mutation or deployment mutation.
 
 ### Result
-PENDING implementation/test/CI.
+Implemented deterministic `bor.report-consistency.v1` verification with explicit issue codes for schema, authority, report/export fingerprint, parent identity, citation set, scenario, disagreement, and data-gap divergence. Negative tests cover stale/tampered parent state, authority escalation, citation loss, scenario divergence, disagreement suppression, and data-gap suppression. PR #19 head `c338cebc2244865dc87c8864ff45639f79946ed2` passed BLACK ORACLE REPORT CI run #61 (typecheck/build/full tests).
 
 ### Adopt / Reject
-PENDING.
+**ADOPT — BOR-S14-E1.** The consistency gate is read-only and fail-closed; it does not repair or manufacture evidence and grants no execution/publication authority. Live Railway runtime/database provisioning remains a separate HOLD because independent BOR resources are unavailable under the current capacity limit.
