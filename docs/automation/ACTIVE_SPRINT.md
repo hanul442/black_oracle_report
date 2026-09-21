@@ -5,73 +5,46 @@ Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
 Status: **IN PROGRESS**
 
-## Objective
+## Completed
+- **BOR-S0** — repository/product boundary bootstrap.
+- **BOR-S1** — independent TypeScript runtime, authority boundary and CI baseline.
 
-Build BLACK ORACLE REPORT as an independent evidence/research/report product with no trading authority and establish a reproducible path from source evidence to versioned reports.
-
-## Completed — BOR-S0 Repository bootstrap
-- BOR-only README and product boundary.
-- Persistent operating cycle.
-- Alpha sprint and research-review documents.
-- Explicit no-trading-authority boundary.
-
-## Completed — BOR-S1 Application/runtime baseline
-
-### Delivered
-- Strict TypeScript project/runtime owned by BOR.
-- Deterministic runtime status with `tradingAuthority: false` and `botDependency: false`.
-- Fail-closed checks for invalid clock and environment names implying broker/trading credentials; values are not exposed.
-- Unit tests for independent readiness and safety boundary.
-- BOR-owned GitHub CI: dependency install → typecheck → build → tests.
-- `docs/architecture/RUNTIME_BOUNDARY.md` documenting independent runtime, future DB ownership and evidence-only BOT interface.
-
-### Research applied
-- **DI-001** — producer/runtime identity is explicit and versionable.
-- **DI-003** — runtime clock is explicit/injectable rather than hidden.
-- **DI-004** — deterministic/versioned boundary supports later replay.
-- **AIML-005 / AIML-006** — agent expansion remains deferred until evaluation foundations exist.
-- **D-005** — UI expansion deferred behind evidence/runtime integrity.
-
-### Verification
-GitHub Actions run `35544972871` completed successfully. Dependency install, TypeScript typecheck, build and all runtime tests passed.
-
-### Safety / rollback
-No deployment, database mutation, broker adapter, private exchange API, order path, portfolio mutation, BOT dependency, or credentials were introduced. BOR-S1 is isolated to BOR and can be reverted by the merged commit if required.
-
-## Next — BOR-S2 Evidence foundation
+## Active — BOR-S2 Canonical Evidence Contract
 
 ### Objective
-Create the canonical, versioned Evidence contract before persistence or agent orchestration.
+Create BOR's immutable, versioned Evidence contract before persistence, NARS ingestion or agent orchestration.
 
 ### Acceptance criteria
-- Canonical Source identity and source version.
-- Canonical asset mapping with explicit unresolved state.
-- Provenance and retrieval/snapshot references.
-- `published_at` and `observed_at` point-in-time semantics.
-- Content fingerprint generated from canonical content identity.
-- Duplicate detection that preserves lineage instead of silently discarding evidence.
-- Staleness policy that never rewrites historical evidence.
-- Versioned Evidence packet with `execution_authority=false`.
-- Tests for invalid timestamps, future/point-in-time violations, duplicate identity and unresolved assets.
+- Versioned Source identity (`source_id`, `source_version`).
+- Canonical asset mapping with explicit `RESOLVED` / `UNRESOLVED` state.
+- Provenance carrying retrieval URI and optional immutable snapshot reference.
+- Distinct `published_at` and `observed_at` point-in-time semantics.
+- SHA-256 content fingerprint derived from canonical content identity.
+- Duplicate detection preserves lineage via `duplicate_of_evidence_id`; it never silently discards an observation.
+- Staleness is an evaluation result, not a mutation of historical Evidence.
+- Versioned Evidence packet has `execution_authority: false` and `producer: BLACK_ORACLE_REPORT`.
+- Fail-closed tests cover invalid timestamps, publication after observation, future observation, unresolved assets and duplicate identity.
 
-### Research gate
-Before implementation, re-read DI-001, DI-003 and DI-004 and record the exact schema decisions. NARS/agent code must not be imported until the Evidence contract is independently testable.
+### Research review applied before implementation
+- **DI-001** — schema and producer/version identity must be explicit and replayable.
+- **DI-003** — `published_at` and `observed_at` are separate; information cannot be treated as knowable before publication.
+- **DI-004** — provenance supports snapshot-addressable replay without requiring mutable source pages.
+- Existing BOR bootstrap review keeps agent expansion deferred until this contract is independently testable.
 
-## Safety / product invariants
-- BOR never holds broker credentials.
-- BOR never submits orders or mutates BOT portfolio state.
-- BOT availability is not required for BOR to operate.
-- Missing, unresolved or contradictory evidence remains explicit.
-- Reports/evidence are immutable/versioned artifacts; later knowledge creates a new version rather than rewriting history.
+### Product / safety boundary
+- Evidence carries no order, portfolio, broker or Risk authority.
+- BOR does not import BOT runtime code or credentials.
+- Missing asset resolution remains explicit instead of guessed.
+- Duplicate/stale evidence remains auditable; historical rows are never rewritten.
+
+### Rollback
+S2 is additive contract/test/documentation work on an isolated branch. Rollback is closing/reverting this PR; there is no database or deployment mutation.
+
+### Exact next gate
+Typecheck/build/tests must pass on the PR head before merge. After merge, **BOR-S3 Evidence Store persistence boundary** becomes next.
 
 ## Cycle exit record
-- Phase: **BOR-S1 DONE → BOR-S2 NEXT**
-- Completed this cycle: independent TypeScript runtime, authority boundary, CI and runtime architecture documentation
-- Research reviewed: DI-001, DI-003, DI-004, AIML-005, AIML-006, D-005
-- Tests/verification: **PASS** — CI run `35544972871`, typecheck/build/runtime tests all green
-- PR: **#2 MERGED**
-- Main commit: `bba8bd71f2baf9473b51cc3e70932a7af6b4e78f`
+- Phase: **PLAN + RESEARCH REVIEW COMPLETE → IMPLEMENT**
+- Research reviewed: DI-001, DI-003, DI-004
 - Deployment: none by design
-- Blockers: independent deploy target/database still unprovisioned; not required for BOR-S2 contract work
-- Alpha status: S0/S1 complete; Evidence foundation is next
-- Next checkpoint: **BOR-S2 — canonical Evidence contract + point-in-time/fingerprint/dedup/staleness tests**
+- Blockers: independent deploy target/database unprovisioned; not required for contract work
