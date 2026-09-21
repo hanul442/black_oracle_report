@@ -31,15 +31,22 @@ Research/report export contract only. No broker credentials, orders, BOT portfol
 Repository-only revert of S12 branch/PR. S11 ReportArtifact and archive remain canonical and unchanged.
 
 ### Research review / constraints
-Review DI-001/003/004, AIML-005/006 and BOR-S8-E1 through BOR-S11-E1. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. Export/rendering is a representation layer only: it may not invent citations, suppress contradiction/data gaps, rewrite version identity, or create execution/publication authority.
+DI-001/003/004, AIML-005/006 and BOR-S8-E1 through BOR-S11-E1 reviewed. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. Export/rendering is a representation layer only: it may not invent citations, suppress contradiction/data gaps, rewrite version identity, or create execution/publication authority.
+
+### Verification / result
+- `bor.report-export.v1` implemented with deterministic parent/export fingerprint checks and zero-authority boundary.
+- GitHub Actions CI #53 on head `8bcc5b02ab9a3f706b67601ae1af7f957e3436fc` passed dependency install, typecheck, build and full deterministic tests.
+- Parent report identity/version/asOf/fingerprint, canonical citations, scenarios/counterevidence, disagreements and data gaps verified as preserved.
+- **BOR-S12-E1: ADOPT.**
 
 ### Exact next gate
-Record S12 research review → implement deterministic export contract + tests → typecheck/build/full tests → verify parent fingerprint/citation/authority invariants → document → PR/CI → merge only if green.
+Run docs-inclusive final CI on the updated PR head → merge PR #17 only if green → begin the next highest-priority unblocked Alpha package. Do not deploy or mutate infrastructure from S12.
 
 ## Current blockers
 - Independent BOR Railway/database runtime is not yet provisioned. This does not block repository-only S12 work.
 - Open PR #16 is documentation-only Global Intelligence research and is outside the frozen Alpha implementation path; do not let it alter S12 scope.
 
 ## Cycle exit record
-- Phase: **PLAN COMPLETE → RESEARCH REVIEW**
-- Single next priority: BOR-S12 deterministic export integrity boundary
+- Phase: **VERIFY COMPLETE → DOCUMENT / FINAL CI**
+- Research result: **BOR-S12-E1 ADOPT**
+- Single next priority: final docs-inclusive CI → merge PR #17 if green → select next frozen-Alpha package
