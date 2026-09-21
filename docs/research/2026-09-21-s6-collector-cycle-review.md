@@ -1,7 +1,7 @@
 # BOR-S6 Collector/NARS Adapter Research Review
 
 Date: 2026-09-21  
-Status: TEST
+Status: ADOPT
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
@@ -10,7 +10,7 @@ Status: TEST
 - **DI-001 — canonical experiment / transformation identity:** collector and cycle identities must be explicit enough to replay the same input path without inventing new lineage.
 - **DI-003 — point-in-time availability:** `publishedAt` and `observedAt` remain distinct; collector transport must not rewrite when information became knowable.
 - **DI-004 — snapshot-addressable replay:** retrieval URI and optional immutable snapshot reference must survive the adapter unchanged.
-- **AIML-005 / AIML-006:** collection and ingestion correctness must remain deterministic infrastructure; no LLM/agent judgment is introduced here.
+- **AIML-005 / AIML-006:** collection and ingestion correctness remains deterministic infrastructure; no LLM/agent judgment is introduced here.
 - Legacy BOT **#39**: cutover readiness was intentionally hard-gated; pipeline health could pass while calibration/comparator/evidence remained BLOCKED.
 - Legacy BOT **#41**: official-domain discovery alone was insufficient for Evidence promotion. Ambiguous/failed acquisition stayed explicit (`fetched_unverified`, `failed`, `blocked`), acquisition attempts were auditable, content was SHA-256 fingerprinted, dedup was deterministic, and NARS stayed `execution_authority=false`.
 - Legacy BOT **#43**: operational surfaces exposed partial upstream failures and an explicit errors stream rather than fabricating healthy state.
@@ -21,29 +21,29 @@ A bounded collector cycle can adapt NARS/external source envelopes into BOR-S5 `
 
 ### Experiment — BOR-S6-E1
 
-Implement:
+Implemented:
 1. `bor.collector-envelope.v1`,
-2. a deterministic adapter into `bor.source-record.v1`,
+2. deterministic adapter into `bor.source-record.v1`,
 3. `bor.collector-cycle.v1` with deterministic cycle/item identities,
-4. per-item `APPENDED | ALREADY_PRESENT | REJECTED` outcomes,
-5. batch `COMPLETE | PARTIAL | FAILED | EMPTY` status and explicit counts,
-6. no direct EvidenceStore writes from collector code,
-7. deterministic network-free tests covering mixed success/failure, replay and duplicate lineage.
-
-### Constraints adopted from research
-
-- Collection success never implies Evidence trust beyond the canonical BOR ingestion gates.
-- One rejected record must not hide accepted records, and accepted records must not hide rejection.
-- Errors are represented as data in the cycle outcome.
-- No automatic production cutover, scheduling, report publication, order path, execution authority or BOT dependency.
+4. per-item `APPENDED | ALREADY_PRESENT | REJECTED`,
+5. batch `COMPLETE | PARTIAL | FAILED | EMPTY`,
+6. no direct EvidenceStore write path from collector code,
+7. deterministic tests for mixed failure, replay, duplicate lineage, collector identity mismatch and empty cycles.
 
 ### Result
 
-Pending implementation and BOR CI verification.
+**PASS.** BOR CI #14 completed successfully:
+- TypeScript typecheck: PASS
+- build: PASS
+- full repository tests: PASS
 
-### Adopt / Reject gate
+The implementation preserves successful records when another item fails, exposes the rejection in the cycle result, replays unchanged batches idempotently, and propagates duplicate lineage through BOR-S5.
 
-**ADOPT** only if deterministic tests and BOR CI pass and the cycle cannot write Evidence except through `SourceEvidenceIngestor`. Otherwise **REVISE/REJECT** without changing BOR-S0–S5.
+### Adopt / Reject
+
+**ADOPT for Alpha contract use.**
+
+The result is an ingestion-domain contract only. It does not authorize a production network collector, scheduler, database cutover, report publication or trading behavior. Those remain separate gates.
 
 ## Authority statement
 
