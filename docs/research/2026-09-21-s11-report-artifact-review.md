@@ -33,7 +33,7 @@ Implement `bor.report-artifact.v1` and archive contract with:
 No provider call, broker credential, order, portfolio mutation, BOT dependency, Risk bypass, public publishing, PDF side effect, migration or deployment mutation.
 
 ### Result
-PENDING implementation/test/CI.
+Implemented `bor.report-artifact.v1` and append-only `ReportArchive`. During verification, deterministic tests exposed the existing S9 abstention constraint in the fixture and manual review exposed a fingerprint-domain mismatch between artifact creation and archive verification. Both were corrected. CI #48 passed typecheck, build, and the full test suite, including S11 authority, chronology, lineage, fingerprint tamper, duplicate-ID, and monotonic version/asOf checks.
 
 ### Adopt / Reject
-PENDING.
+**ADOPT — BOR-S11-E1.** The report artifact/archive contract preserves canonical citation lineage, uncertainty, immutable version history, and zero execution/publication authority. PDF/UI/database persistence remain separate later gates.
