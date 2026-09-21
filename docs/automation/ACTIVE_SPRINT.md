@@ -13,60 +13,66 @@ Status: **IN PROGRESS**
 - BOR-S4 persistent SQL adapter contract.
 - CLEANUP-01 migration ownership audit.
 - BOR-S5 Source/NARS ingestion — merged as `2643fcb9a3f6f5106458b69f83472e83c2c0f3c6`.
+- **BOR-S6 Collector/NARS adapter + bounded ingestion cycle — merged #8 as `6fb72904d9584738460c828edd70fbe729e934cd`.**
 
-## Active — BOR-S6 Collector/NARS adapter + ingestion cycle
+## BOR-S6 final record
 
-### Objective
-Create a bounded collector cycle that accepts versioned external/NARS source envelopes, adapts them into canonical `bor.source-record.v1`, ingests through `SourceEvidenceIngestor`, and exposes explicit per-item/batch outcomes without database, report-publication or trading authority.
+### Delivered
+- `bor.collector-envelope.v1`
+- deterministic adapter into `bor.source-record.v1`
+- `bor.collector-cycle.v1` with deterministic item/cycle identities
+- per-item `APPENDED / ALREADY_PRESENT / REJECTED`
+- cycle `COMPLETE / PARTIAL / FAILED / EMPTY`
+- explicit attempted/appended/already-present/rejected counts
+- successful records preserved alongside explicit rejected outcomes
+- all accepted records route only through `SourceEvidenceIngestor`
+- `executionAuthority=false`
+- `reportPublicationAuthority=false`
 
-### Acceptance criteria — IMPLEMENTED
-- `bor.collector-envelope.v1` adapter boundary.
-- source/provenance/published/observed/content/asset state preserved.
-- accepted records route only through `SourceEvidenceIngestor`.
-- per-item `APPENDED / ALREADY_PRESENT / REJECTED` with deterministic identity/error.
-- batch `COMPLETE / PARTIAL / FAILED / EMPTY` plus attempted/appended/already-present/rejected counts.
-- mixed failures stay visible and do not erase successful records.
-- `executionAuthority=false`, `reportPublicationAuthority=false`.
-- deterministic tests cover mixed failure, replay, duplicate lineage, identity mismatch and empty cycles.
-- no network fetcher, credentials, scheduler or production DB provisioning.
-
-### Research review
+### Research / precedent
 Reviewed **DI-001, DI-003, DI-004, AIML-005, AIML-006** and legacy NARS **#39/#41/#43**.
 Research record: `docs/research/2026-09-21-s6-collector-cycle-review.md`.
-Disposition: **ADOPT for Alpha contract use after implementation CI #14 PASS**; no runtime/trading authority adopted.
-
-### Product / safety boundary
-- BOR has **NO trading authority**.
-- No broker credentials, orders, BOT portfolio/database access or Risk authority.
-- Collectors cannot mutate historical Evidence or bypass `EvidenceStore`.
-- Missing/unresolved/contradictory evidence remains explicit.
-- Legacy Railway Black Oracle project is unchanged; no independent BOR production deployment exists yet.
-
-### Rollback
-Repository-only revert / stop invoking the S6 cycle. S0-S5 and historical Evidence remain intact.
+Disposition: **ADOPT for Alpha contract use**.
 
 ### Verification
 - PR: **#8**
-- Implementation head CI: **BLACK ORACLE REPORT CI #14 — PASS**
-- Typecheck/build/full repository tests: **PASS**
-- Architecture contract: `docs/architecture/COLLECTOR_INGESTION_CONTRACT_V1.md`
-- Deployment: none by design
-- Runtime/database mutation: none
+- implementation CI #14: **PASS**
+- final PR head CI #16: **PASS**
+- typecheck: PASS
+- build: PASS
+- full repository tests: PASS
+- architecture: `docs/architecture/COLLECTOR_INGESTION_CONTRACT_V1.md`
+- deployment: none by design
+- runtime/database mutation: none
 
-### Exact next gate
-Final PR head CI green → merge BOR-S6 → **independent BOR runtime/database provisioning gate**.
+### Safety / rollback
+BOR still has **NO trading authority**. No broker credentials, orders, BOT portfolio/database access, Risk authority, network scheduler or production DB provisioning were introduced. Rollback is repository revert / stop invoking S6; historical Evidence remains append-only.
 
 ## Current deployment state
 - Railway contains only the legacy combined **Black Oracle** project and historical services.
 - No independent BOR Railway project/service/database is provisioned.
-- This did not block S6 contract/test work.
+- This is now the next infrastructure gate rather than a code blocker.
+
+## Next work package — BOR-S7 independent runtime/database provisioning gate
+
+### Objective
+Provision BOR as an independently deployable runtime/database target without reusing BOT execution state or credentials, then bind the already-tested SQL Evidence adapter under explicit rollback and no-trading-authority controls.
+
+### Preconditions / boundaries
+- preserve current BOR contracts and append-only Evidence semantics;
+- no BOT database dependency;
+- no broker/private trading credentials;
+- no destructive migration of legacy Evidence;
+- provider secrets remain server-only;
+- rollback must stop writers/deployments without deleting historical Evidence.
+
+### Exact next gate
+`inspect available Railway/database provisioning capabilities → record infra plan/rollback → provision isolated BOR target if no credential/cost/destructive blocker → smoke health + Evidence persistence boundary → document/deploy report`.
 
 ## Cycle exit record
-- Phase: **IMPLEMENT / TEST / VERIFY / DOCUMENT COMPLETE → FINAL CI/MERGE GATE**
-- Concrete change: bounded Collector/NARS adapter + ingestion-cycle contract
-- Research: DI-001/003/004; AIML-005/006; legacy #39/#41/#43
-- Tests: CI #14 PASS
-- PR: #8
+- Phase: **BOR-S6 COMPLETE / MERGED**
+- Merge: `6fb72904d9584738460c828edd70fbe729e934cd`
+- Tests: CI #14 PASS; final CI #16 PASS
 - Deployment: none
-- Blockers: no code blocker; independent production infrastructure remains unprovisioned by design
-- Single next priority: **BOR independent runtime/database provisioning gate**
+- Blockers: none for S6
+- Single next priority: **BOR-S7 independent runtime/database provisioning gate**
