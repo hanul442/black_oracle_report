@@ -1,4 +1,4 @@
-# ACTIVE SPRINT — BOR Alpha Source Ingestion
+# ACTIVE SPRINT — BOR Alpha Collector Integration
 
 Date: **2026-09-21**
 Target release: **2026-10-20 — Alpha v0.1**
@@ -8,51 +8,65 @@ Status: **IN PROGRESS**
 ## Completed
 - BOR-S0 repository/product boundary bootstrap.
 - BOR-S1 independent TypeScript runtime + CI.
-- BOR-S2 canonical `bor.evidence.v1` point-in-time Evidence contract.
+- BOR-S2 canonical `bor.evidence.v1`.
 - BOR-S3 append-only Evidence Store.
 - BOR-S4 persistent SQL adapter contract.
-- CLEANUP-01 migration ownership audit — merged #6 as `bfb8d8fc6756d930aeb98250a82fd444a79ea62f`.
+- CLEANUP-01 migration ownership audit.
+- BOR-S5 Source/NARS ingestion — merged as `2643fcb9a3f6f5106458b69f83472e83c2c0f3c6`.
 
-## Active — BOR-S5 Source/NARS ingestion boundary
+## Active — BOR-S6 Collector/NARS adapter + ingestion cycle
 
 ### Objective
-Create a deterministic, fail-closed ingestion boundary that converts externally collected source records into canonical BOR Evidence without giving collectors storage, report-publication or trading authority.
+Create a bounded collector cycle that accepts versioned external/NARS source envelopes, adapts them into canonical `bor.source-record.v1`, ingests through `SourceEvidenceIngestor`, and exposes explicit per-item/batch outcomes without database, report-publication or trading authority.
 
-### Acceptance criteria
-- Define a versioned `bor.source-record.v1` input contract with source identity/version, publisher, retrieval provenance, `publishedAt`, `observedAt`, canonical content and asset-resolution result.
-- Validate point-in-time ordering and reject future observations, missing identity/provenance/content, and malformed asset-resolution records before persistence.
-- Derive deterministic Evidence IDs from immutable source/version/content identity rather than collector-generated randomness.
-- Reuse `createEvidencePacket` for SHA-256 content fingerprints and canonical timestamp normalization.
-- Detect existing fingerprints through `EvidenceStore`; preserve duplicates explicitly via `duplicateOfEvidenceId` rather than silently dropping them.
-- Keep unresolved assets explicit and append them as Evidence; never guess a canonical asset.
-- Add deterministic tests for fresh append, idempotent replay, duplicate lineage, unresolved asset preservation and fail-closed invalid time/content.
-- No network client, provider credential or production database provisioning in this work package.
+### Acceptance criteria — IMPLEMENTED
+- `bor.collector-envelope.v1` adapter boundary.
+- source/provenance/published/observed/content/asset state preserved.
+- accepted records route only through `SourceEvidenceIngestor`.
+- per-item `APPENDED / ALREADY_PRESENT / REJECTED` with deterministic identity/error.
+- batch `COMPLETE / PARTIAL / FAILED / EMPTY` plus attempted/appended/already-present/rejected counts.
+- mixed failures stay visible and do not erase successful records.
+- `executionAuthority=false`, `reportPublicationAuthority=false`.
+- deterministic tests cover mixed failure, replay, duplicate lineage, identity mismatch and empty cycles.
+- no network fetcher, credentials, scheduler or production DB provisioning.
+
+### Research review
+Reviewed **DI-001, DI-003, DI-004, AIML-005, AIML-006** and legacy NARS **#39/#41/#43**.
+Research record: `docs/research/2026-09-21-s6-collector-cycle-review.md`.
+Disposition: **ADOPT for Alpha contract use after implementation CI #14 PASS**; no runtime/trading authority adopted.
 
 ### Product / safety boundary
-- BOR has **NO trading authority** and remains independent from BOT runtime/database.
-- Collector input cannot submit orders, mutate BOT portfolio state, bypass Risk, publish a report, or change historical Evidence.
-- Missing/contradictory/unresolved evidence remains explicit.
-- Existing Evidence is append-only; duplicate detection creates lineage, not deletion.
+- BOR has **NO trading authority**.
+- No broker credentials, orders, BOT portfolio/database access or Risk authority.
+- Collectors cannot mutate historical Evidence or bypass `EvidenceStore`.
+- Missing/unresolved/contradictory evidence remains explicit.
+- Legacy Railway Black Oracle project is unchanged; no independent BOR production deployment exists yet.
 
-### Rollback path
-Revert the BOR-S5 PR. S0–S4 Evidence contracts and persistence remain unchanged because S5 is additive. Historical Evidence is never deleted as rollback.
+### Rollback
+Repository-only revert / stop invoking the S6 cycle. S0-S5 and historical Evidence remain intact.
+
+### Verification
+- PR: **#8**
+- Implementation head CI: **BLACK ORACLE REPORT CI #14 — PASS**
+- Typecheck/build/full repository tests: **PASS**
+- Architecture contract: `docs/architecture/COLLECTOR_INGESTION_CONTRACT_V1.md`
+- Deployment: none by design
+- Runtime/database mutation: none
 
 ### Exact next gate
-`source-record contract + ingestion service + deterministic tests → BOR CI green → merge BOR-S5 → independent database provisioning gate / Collector adapter integration.`
+Final PR head CI green → merge BOR-S6 → **independent BOR runtime/database provisioning gate**.
 
-## Research review for BOR-S5
-- **DI-001** — transformation identity and deterministic lineage must be explicit and replayable.
-- **DI-003** — `publishedAt` and `observedAt` remain separate; future/retroactive knowledge fails closed.
-- **DI-004** — retrieval provenance and snapshot references survive ingestion for replay/citation audit.
-- **AIML-005 / AIML-006** — agent expansion remains downstream; ingestion is deterministic infrastructure, not an LLM behavior.
-- Legacy BOT **#39/#41/#43** — historical NARS acquisition/canonicalization precedents only; no legacy runtime/database coupling is imported.
+## Current deployment state
+- Railway contains only the legacy combined **Black Oracle** project and historical services.
+- No independent BOR Railway project/service/database is provisioned.
+- This did not block S6 contract/test work.
 
-Research disposition: **TEST / schema candidate.** No research item grants production or trading authority.
-
-## Next ordered Alpha work
-1. BOR-S5 Source/NARS ingestion boundary — ACTIVE.
-2. Independent Evidence database provisioning gate.
-3. Collector/Organizer/Research Analyst pipeline.
-4. Specialist/Red Team/Research Council evaluation.
-5. Versioned thesis/scenario/report archive.
-6. Citation/consistency checks and PDF/export.
+## Cycle exit record
+- Phase: **IMPLEMENT / TEST / VERIFY / DOCUMENT COMPLETE → FINAL CI/MERGE GATE**
+- Concrete change: bounded Collector/NARS adapter + ingestion-cycle contract
+- Research: DI-001/003/004; AIML-005/006; legacy #39/#41/#43
+- Tests: CI #14 PASS
+- PR: #8
+- Deployment: none
+- Blockers: no code blocker; independent production infrastructure remains unprovisioned by design
+- Single next priority: **BOR independent runtime/database provisioning gate**
