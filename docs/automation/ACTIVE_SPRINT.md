@@ -1,56 +1,49 @@
-# ACTIVE SPRINT — BOR Alpha Consumer Read Model
+# ACTIVE SPRINT — BOR Alpha Read API Boundary
 
-Date: **2026-09-21**
+Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S15 VERIFIED — FINAL CI / MERGE GATE; LIVE DEPLOYMENT CAPACITY BLOCKED**
+Status: **S16 VERIFIED / ADOPT — FINAL CI + S15 DEPENDENCY GATE**
 
 ## Completed
 - BOR-S0–S14 complete and merged.
-- S11–S14 established versioned report/archive, deterministic export, independent deployability contract, and fail-closed report/export consistency verification.
+- BOR-S15 implementation/research is verified and ADOPT on PR #20; final CI #67 is green, but its merge action remains externally blocked.
+- BOR-S16 implementation is verified on PR #21 and **BOR-S16-E1 ADOPT**.
+- CI #68 passed typecheck, build, full deterministic tests, and independent Railway runtime-config verification.
 
-## Active — BOR-S15 Alpha consumer read-model contract
+## Active — BOR-S16 Alpha read-only HTTP API boundary
 
 ### Objective
-Create a deterministic, read-only Alpha consumer projection over canonical report/export/consistency artifacts so future Today/Research/Evidence/Oracle/Reports/Library UI surfaces consume one integrity-gated contract instead of reconstructing or silently repairing research state.
+Expose the S15 `bor.alpha-read-model.v1` through a deterministic read-only HTTP response contract so frozen-Alpha UI surfaces can consume one canonical integrity-preserving payload without reconstructing evidence or acquiring authority.
 
 ### Acceptance criteria
-- schema `bor.alpha-read-model.v1`
-- input requires a report/export pair whose S14 consistency result is PASS
-- preserve report ID, series ID, version, asOf and canonical report/export fingerprints
-- preserve exact canonical citation IDs, Bull/Base/Bear scenarios and contradicting-evidence IDs
-- preserve unresolved disagreements and data gaps explicitly
-- expose report summary/thesis without manufacturing evidence or directional certainty
-- fixed `executionAuthority=false`, `reportPublicationAuthority=false`, `botDependency=false`
-- deterministic content fingerprint over the canonical read-model payload
-- fail closed on stale/tampered/inconsistent parent artifacts or authority escalation
-- deterministic tests cover valid projection, consistency failure, parent mismatch/tamper and authority escalation
+- explicit versioned `bor.alpha-read-api.v1` response envelope
+- only accepts a canonical S15 AlphaReadModel whose deterministic content fingerprint recomputes correctly
+- preserves projection/report/export identity, report version/asOf, canonical citations, Bull/Base/Bear scenarios/counterevidence, disagreements and data gaps exactly
+- `executionAuthority=false`, `reportPublicationAuthority=false`, `botDependency=false`
+- GET-only; unsupported methods fail closed
+- missing model returns explicit unavailable response rather than invented/empty research state
+- deterministic tests cover valid response, tampered fingerprint, authority escalation, unavailable state and unsupported method
 
 ### Product / safety boundary
-Read-only BOR research/report consumer contract only. No broker/exchange credentials, orders, BOT portfolio mutation, Risk bypass, provider calls, public publishing, database mutation, deployment mutation, or BOT dependency. The projection may expose canonical uncertainty; it may never suppress, repair, infer, or manufacture Evidence.
+Read-only BOR presentation/API boundary only. No broker/exchange credentials, orders, BOT portfolio mutation, Risk bypass, provider calls, public publishing, database writes, deployment mutation, evidence synthesis/repair, or BOT dependency. API serialization may reject state; it may never manufacture or suppress Evidence or uncertainty.
 
 ### Rollback
-Repository-only revert of S15 branch/PR. S11–S14 canonical artifacts and gates remain unchanged.
+Repository-only revert of S16 branch/PR. S11–S15 canonical artifacts and gates remain unchanged. S16 remains dependent on verified S15 until PR #20 lands safely.
 
 ### Research review / constraints
-DI-001/003/004, AIML-005/006 and BOR-S8-E1 through BOR-S14-E1 constrain S15. BOR-S15-H1/E1 preserves Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. UI/read models are consumers of verified artifacts, never a new synthesis or authority layer.
-
-### Verification result
-- PR #20 code head `c75c3465a0588b6937beee3e59514e1d63a7b81a` passed BLACK ORACLE REPORT CI #65.
-- Typecheck, build and full deterministic tests passed.
-- Projection independently re-runs S14 consistency, preserving parent fingerprints, canonical citations, Bull/Base/Bear/counterevidence, disagreements and data gaps.
-- Authority remains fixed false and BOT dependency remains false.
-- BOR-S15-E1: **ADOPT**.
+DI-001/003/004, AIML-005/006 and BOR-S8-E1 through BOR-S15-E1 constrain S16. BOR-S16-H1/E1 is now **ADOPT** after CI #68 and manual contract verification. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage.
 
 ### Exact next gate
-Final docs-inclusive CI green → squash-merge PR #20 → begin the highest-priority unblocked frozen-Alpha consumer/API surface package; do not bypass the independent Railway runtime/database capacity blocker.
+Run docs-inclusive final CI on PR #21 → if green, keep S16 ready but do not merge ahead of S15 → land PR #20 when connector safety gate permits → retarget/merge PR #21 only after S15 is on `main`. If merge remains externally blocked, continue only safe repository work without collapsing dependency or authority boundaries.
 
 ## Current blockers
+- **CONFIRMED external:** GitHub merge action for green/mergeable PR #20 remains blocked by connector safety checks; no bypass attempted.
 - **CONFIRMED external:** Railway free-plan resource provision limit blocks independent BOR runtime/database provisioning.
 - Existing Railway `Black Oracle` services remain legacy BOT/paper/web infrastructure and forbidden for BOR reuse.
-- PR #16 remains documentation-only Global Intelligence research outside frozen Alpha implementation.
-- Repository-only Alpha work is unblocked.
 
 ## Cycle exit record
-- Phase: **VERIFY/DOCUMENT COMPLETE → FINAL CI / MERGE**
-- Single next priority: final CI and merge of BOR-S15, then select the next frozen-Alpha consumer/API package.
+- Phase: **VERIFY / DOCUMENT COMPLETE → FINAL CI / DEPENDENCY GATE**
+- Verification: CI #68 green; API contract manually reviewed for fingerprint and no-authority preservation.
+- Research result: **BOR-S16-E1 ADOPT**.
+- Single next priority: final CI for PR #21, then resolve S15 merge dependency safely before any S16 merge.
