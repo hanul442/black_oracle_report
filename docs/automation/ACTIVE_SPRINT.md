@@ -1,4 +1,4 @@
-# ACTIVE SPRINT — BOR Alpha Evidence Foundation
+# ACTIVE SPRINT — BOR Separation Cleanup
 
 Date: **2026-09-21**
 Target release: **2026-10-20 — Alpha v0.1**
@@ -6,43 +6,43 @@ Repository: `hanul442/black_oracle_report`
 Status: **IN PROGRESS**
 
 ## Completed
-- **BOR-S0** — repository/product boundary bootstrap.
-- **BOR-S1** — independent TypeScript runtime, authority boundary and CI baseline.
-- **BOR-S2** — canonical `bor.evidence.v1` point-in-time Evidence contract.
-- **BOR-S3** — append-only Evidence Store port/reference implementation; PR #4 CI green and merged as `78b3edd160abb4d73b6056fe11958483317544f8`.
+- BOR-S0 repository/product boundary bootstrap.
+- BOR-S1 independent runtime + CI.
+- BOR-S2 canonical `bor.evidence.v1`.
+- BOR-S3 append-only Evidence Store.
+- BOR-S4 persistent SQL adapter contract — CI green and merged as `f11f014b0bcc95b231c07bf17bf3f1900b65059c`.
 
-## Active — BOR-S4 Persistent Evidence Adapter Contract
+## Active — CLEANUP-01 Migration ownership audit
 
-### Objective / acceptance
-Define a concrete persistence boundary without provisioning production storage. The branch now contains an additive SQL schema, injected SQL driver adapter, idempotent append/conflict semantics, deterministic fingerprint reads, and network-free tests.
+### Objective
+Create a canonical extraction queue for useful Report/NARS assets left in the legacy BOT history without restoring repository/runtime coupling.
 
-### Research review
-- **DI-001** — explicit schema/producer/version identity retained.
-- **DI-003** — `published_at` / `observed_at` stored separately and point-in-time ordering constrained.
-- **DI-004** — retrieval provenance and optional snapshot reference persisted for replay/citation audit.
-- Experiment note: `docs/research/2026-09-21-s4-persistence-review.md`.
-- Current decision: **TEST / candidate for ADOPT after CI green**.
+### Acceptance criteria
+- Record source PRs and BOR-owned extraction candidates.
+- Prioritize NARS/source ingestion before agent/report orchestration.
+- Bind all migrated Evidence concepts to BOR contracts.
+- Explicitly defer Credits/billing from frozen Alpha.
+- Preserve no-trading-authority and independent database/runtime boundaries.
 
-### Implemented
-- `db/migrations/0001_evidence_store.sql`: BOR-only Evidence table and indexes with DB constraints for schema, producer, `execution_authority=false`, point-in-time ordering, asset shape and non-self-duplicate lineage.
-- `src/sqlEvidenceStore.ts`: `EvidenceStore` adapter over an injected parameterized SQL query driver; no DB SDK or credentials embedded.
-- `src/sqlEvidenceStore.test.ts`: deterministic append, conflict, fingerprint-order and migration-invariant tests.
-- No update/delete API, no production database provisioning and no BOT dependency.
+### Research / precedent review
+- DI-001 / DI-003 / DI-004 constrain identity, point-in-time semantics and replay.
+- Legacy BOT #39/#41/#43 are historical NARS implementation references.
+- Legacy BOT #200 is a historical Report/agent contract source.
+- No legacy branch is production authority for BOR.
 
 ### Product / safety boundary
-- BOR has **NO trading authority**.
-- No broker credentials, order path, BOT database access, portfolio mutation or Risk authority.
-- Missing/contradictory/unresolved Evidence remains explicit.
-- Rollback remains non-destructive: revert code / stop writers; never delete historical Evidence as rollback.
+No broker credentials, orders, BOT portfolio mutation, BOT database dependency, Risk authority or execution authority.
 
-### Verification / exact next gate
-- Local/live database verification: intentionally not applicable; no database is provisioned.
-- GitHub CI on PR head must pass typecheck/build/tests before merge.
-- After merge: **BOR-S5 Source/NARS ingestion boundary**. Production DB provisioning remains a separately reviewed infrastructure gate.
+### Rollback
+Documentation-only. Remove/revise migration classifications without changing historical Evidence or runtime state.
 
-## Cycle exit record
-- Phase: **IMPLEMENT + DOCUMENT COMPLETE → PR/CI VERIFY**
-- Research reviewed: DI-001, DI-003, DI-004
-- Deployment: none by design
-- Blockers: independent deploy target/database unprovisioned; does not block S4 contract work
-- Alpha status: S0/S1/S2/S3 complete; S4 implementation complete pending CI
+### Exact next gate
+Cleanup PR CI green → merge → **BOR-S5 Source/NARS ingestion boundary**.
+
+## Next ordered Alpha work
+1. BOR-S5 Source/NARS ingestion.
+2. Independent Evidence database provisioning gate.
+3. Collector/Organizer/Research Analyst pipeline.
+4. Specialist/Red Team/Research Council evaluation.
+5. Versioned thesis/scenario/report archive.
+6. Citation/consistency checks and PDF/export.
