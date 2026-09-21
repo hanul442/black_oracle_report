@@ -6,42 +6,40 @@ Repository: `hanul442/black_oracle_report`
 Status: **IN PROGRESS**
 
 ## Completed
-- BOR-S0–S10 complete and merged.
-- BOR-S10 introduced versioned thesis + exactly Bull/Base/Bear scenarios with evidence/counterevidence lineage and authority fixed false.
-- Independent Railway/database activation remains blocked by Railway free-plan resource capacity; repository Alpha development is unblocked.
+- BOR-S0–S11 complete and merged.
+- BOR-S11 introduced `bor.report-artifact.v1`, canonical citation union, deterministic fingerprinting and append-only report archive controls with execution/publication authority fixed false.
+- Independent BOR Railway/database provisioning remains unresolved; existing BOT/paper/web services must not be reused as BOR runtime.
 
-## Active — BOR-S11 Versioned report artifact + archive integrity boundary
+## Active — BOR-S12 Deterministic export/PDF integrity boundary
 
 ### Objective
-Create a deterministic, immutable report artifact downstream of a valid ThesisScenarioArtifact and an append-only in-memory archive contract that preserves point-in-time lineage, citation integrity, contradiction/uncertainty, and version history before PDF/UI work.
+Create a deterministic export artifact downstream of a valid S11 ReportArtifact so HTML/PDF renderers can consume one verified, versioned payload without changing research meaning or authority.
 
 ### Acceptance criteria
-- schema `bor.report-artifact.v1`
-- stable bundle/review/council/thesis lineage and chronology
-- report citations are the canonical union of scenario evidence + contradicting Evidence and remain material-verified upstream members
-- thesis, Bull/Base/Bear, catalysts, risks, invalidation, disagreements and data gaps are preserved rather than silently omitted
-- report content fingerprint is deterministic from canonical report payload
-- report versions are immutable; archive rejects artifact-ID reuse and non-monotonic version/asOf updates for a report series
-- `executionAuthority=false` and `reportPublicationAuthority=false`
-- deterministic tests cover forged lineage/citation, chronology, authority escalation, fingerprint tampering, archive duplication and version ordering
+- schema `bor.report-export.v1`
+- exact parent report identity, version, asOf and contentFingerprint preserved
+- canonical citation IDs, thesis/scenarios, contradictory evidence references, disagreements and data gaps preserved in export payload
+- deterministic export fingerprint over canonical payload
+- fail closed on report fingerprint tampering, authority escalation or invalid format
+- export authority remains false; rendering does not imply public publication
+- deterministic tests cover stable export, tampered report, authority escalation and citation/uncertainty preservation
 
 ### Product / safety boundary
-Research/report artifact and archive contract only. No broker credentials, orders, BOT portfolio mutation, Risk bypass, provider calls, public publishing, PDF side effects, database migration or deployment mutation.
+Research/report export contract only. No broker credentials, orders, BOT portfolio mutation, Risk bypass, provider calls, public publishing, database migration, external PDF service or deployment mutation.
 
 ### Rollback
-Repository-only revert of S11 branch/PR. Canonical Evidence and S8–S10 research artifacts remain unchanged.
+Repository-only revert of S12 branch/PR. S11 ReportArtifact and archive remain canonical and unchanged.
 
 ### Research review / constraints
-Review DI-001/003/004, AIML-005/006, BOR-S8-E1, BOR-S9-E1 and BOR-S10-E1. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. Report rendering may summarize but cannot manufacture evidence, suppress contradictory evidence/data gaps, or create publication authority.
+Review DI-001/003/004, AIML-005/006 and BOR-S8-E1 through BOR-S11-E1. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. Export/rendering is a representation layer only: it may not invent citations, suppress contradiction/data gaps, rewrite version identity, or create execution/publication authority.
 
 ### Exact next gate
-Research review recorded → implement report artifact/archive + tests → typecheck/build/full tests → verify fingerprint/citation/authority invariants → document → PR/CI → merge only if green.
+Record S12 research review → implement deterministic export contract + tests → typecheck/build/full tests → verify parent fingerprint/citation/authority invariants → document → PR/CI → merge only if green.
 
-## Current blocker
-Independent BOR Railway/database activation remains blocked by Railway free-plan resource capacity. Repository Alpha development is unblocked.
+## Current blockers
+- Independent BOR Railway/database runtime is not yet provisioned. This does not block repository-only S12 work.
+- Open PR #16 is documentation-only Global Intelligence research and is outside the frozen Alpha implementation path; do not let it alter S12 scope.
 
 ## Cycle exit record
-- Phase: **VERIFY COMPLETE → DOCUMENT / FINAL CI**
-- Verification: CI #48 passed typecheck, build, and full tests after fixing fingerprint-domain mismatch and aligning the S11 fixture with the S9 abstention contract.
-- Research result: **BOR-S11-E1 ADOPT**.
-- Single next priority: final docs-inclusive CI → merge PR #15 if green → begin BOR-S12 export/PDF integrity boundary
+- Phase: **PLAN COMPLETE → RESEARCH REVIEW**
+- Single next priority: BOR-S12 deterministic export integrity boundary
