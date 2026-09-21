@@ -28,8 +28,11 @@ export interface ResearchCouncilInput extends NoAuthority {
   specialistReviews: readonly SpecialistReview[]; redTeamChallenges: readonly RedTeamChallenge[]; stance: CouncilStance;
   confidence: number | null; synthesis: string; unresolvedDisagreements: readonly string[]; dataGaps?: readonly string[];
 }
-export interface ResearchCouncilDecision extends Omit<ResearchCouncilInput, 'executionAuthority'|'reportPublicationAuthority'> {
-  schemaVersion: typeof RESEARCH_COUNCIL_SCHEMA_VERSION; executionAuthority: false; reportPublicationAuthority: false;
+export interface ResearchCouncilDecision extends Omit<ResearchCouncilInput, 'executionAuthority'|'reportPublicationAuthority'|'dataGaps'> {
+  schemaVersion: typeof RESEARCH_COUNCIL_SCHEMA_VERSION;
+  dataGaps: readonly string[];
+  executionAuthority: false;
+  reportPublicationAuthority: false;
 }
 
 function text(v:string, f:string){ const n=v.trim(); if(!n) throw new Error(`${f} is required`); return n; }
