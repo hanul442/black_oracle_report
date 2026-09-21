@@ -1,0 +1,33 @@
+{
+  "brand": "BOR",
+  "name": "Black Oracle Research",
+  "version": "1.0.0",
+  "status": "locked",
+  "role": "research-intelligence",
+  "colors": {
+    "obsidian": "#07090C",
+    "graphite": "#11151B",
+    "slate": "#202731",
+    "frost": "#F4F7FA",
+    "mutedSilver": "#8B96A5",
+    "intelligenceBlue": "#4C9FFF",
+    "deepIntelligence": "#184A7A",
+    "evidenceCyan": "#65D8F4"
+  },
+  "typography": {
+    "display": "Inter Tight",
+    "ui": "Inter",
+    "fallback": "Arial, sans-serif"
+  },
+  "voice": [
+    "evidence-first",
+    "institutional",
+    "analytical",
+    "verifiable",
+    "clear"
+  ],
+  "lockPolicy": {
+    "mutateV1": false,
+    "materialChangesRequire": "new-version-directory"
+  }
+}
