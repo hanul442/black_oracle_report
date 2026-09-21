@@ -3,7 +3,7 @@
 Date: **2026-09-21**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **IN PROGRESS — LIVE DEPLOYMENT CAPACITY BLOCKED, REPOSITORY WORK UNBLOCKED**
+Status: **S14 VERIFIED — FINAL CI / MERGE GATE; LIVE DEPLOYMENT CAPACITY BLOCKED**
 
 ## Completed
 - BOR-S0–S13 complete and merged.
@@ -34,17 +34,26 @@ Read-only research/report consistency verification only. No broker/exchange cred
 Repository-only revert of S14 branch/PR. S11 report artifacts, S12 exports and S13 deployment contract remain canonical and unchanged.
 
 ### Research review / constraints
-Review DI-001/003/004, AIML-005/006, BOR-S8-E1 through BOR-S13-E1, `REPORT_ARTIFACT_CONTRACT_V1.md`, and `REPORT_EXPORT_CONTRACT_V1.md`. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. Consistency verification is a gate, not a synthesis layer: uncertainty and contradictory evidence must remain explicit.
+DI-001/003/004, AIML-005/006, BOR-S8-E1 through BOR-S13-E1, `REPORT_ARTIFACT_CONTRACT_V1.md`, and `REPORT_EXPORT_CONTRACT_V1.md` reviewed. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. Consistency verification is a gate, not a synthesis layer: uncertainty and contradictory evidence remain explicit.
+
+### Verification / result
+- Implemented `bor.report-consistency.v1` with deterministic PASS/FAIL and explicit issue codes.
+- Recomputes report/export fingerprints before PASS.
+- Verifies parent report identity/version/asOf/fingerprint, canonical citation equality, exact scenario/counterevidence preservation, disagreement/data-gap preservation, and fixed no-authority boundary.
+- Negative tests cover stale/tampered parent, authority escalation, citation divergence, scenario divergence, disagreement suppression, and data-gap suppression.
+- PR #19 head `c338cebc2244865dc87c8864ff45639f79946ed2` passed BLACK ORACLE REPORT CI run #61.
+- **BOR-S14-E1: ADOPT.**
 
 ### Exact next gate
-Record BOR-S14 research review → implement consistency verifier + negative tests → typecheck/build/full tests → verify artifact/citation/data-integrity invariants → document result → PR/CI → merge only if green.
+Run docs-inclusive final CI on the documented S14 head → merge PR #19 only if green. After merge, select the highest-priority unblocked frozen-Alpha package; keep independent Railway runtime/database provisioning explicitly HOLD until capacity is available.
 
 ## Current blockers
 - **CONFIRMED external:** Railway free-plan resource provision limit blocks independent BOR runtime/database provisioning.
-- Existing legacy Black Oracle BOT/paper/web infrastructure remains forbidden for BOR reuse.
+- Current Railway `Black Oracle` production contains only legacy `black-oracle-web` / paper services; no BOR service is present, and those resources remain forbidden for BOR reuse.
 - PR #16 remains documentation-only Global Intelligence research outside frozen Alpha implementation.
-- Repository-only S14 work is unblocked.
+- Repository-only Alpha work is unblocked.
 
 ## Cycle exit record
-- Phase: **PLAN COMPLETE → RESEARCH REVIEW**
-- Single next priority: BOR-S14 deterministic report/export consistency gate.
+- Phase: **VERIFY/DOCUMENT COMPLETE → FINAL CI / MERGE**
+- Research result: **BOR-S14-E1 ADOPT**.
+- Single next priority after safe S14 merge: next frozen-Alpha repository-only package, with Railway deployment gate kept explicit.
