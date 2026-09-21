@@ -1,59 +1,56 @@
-# ACTIVE SPRINT — BOR Alpha Report Consistency Gate
+# ACTIVE SPRINT — BOR Alpha Consumer Read Model
 
 Date: **2026-09-21**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S14 VERIFIED — FINAL CI / MERGE GATE; LIVE DEPLOYMENT CAPACITY BLOCKED**
+Status: **S15 VERIFIED — FINAL CI / MERGE GATE; LIVE DEPLOYMENT CAPACITY BLOCKED**
 
 ## Completed
-- BOR-S0–S13 complete and merged.
-- S11 established versioned report artifacts/archive integrity.
-- S12 established deterministic export integrity.
-- S13 established independent deployment configuration; live Railway provisioning remains blocked by free-plan resource capacity.
+- BOR-S0–S14 complete and merged.
+- S11–S14 established versioned report/archive, deterministic export, independent deployability contract, and fail-closed report/export consistency verification.
 
-## Active — BOR-S14 Report consistency / release-readiness gate
+## Active — BOR-S15 Alpha consumer read-model contract
 
 ### Objective
-Add a deterministic, fail-closed consistency verifier over the S11 report artifact and S12 export artifact so Alpha UI/archive consumers cannot treat internally inconsistent, citation-divergent, stale-parent, authority-escalated, or uncertainty-suppressing report/export pairs as release-ready.
+Create a deterministic, read-only Alpha consumer projection over canonical report/export/consistency artifacts so future Today/Research/Evidence/Oracle/Reports/Library UI surfaces consume one integrity-gated contract instead of reconstructing or silently repairing research state.
 
 ### Acceptance criteria
-- deterministic `bor.report-consistency.v1` verification result
-- exact report/export parent identity, version, asOf and report fingerprint agreement
-- exact canonical citation-set agreement; no invented/dropped citations
-- Bull/Base/Bear scenario structure and contradicting-evidence references preserved
-- unresolved disagreements and data gaps preserved exactly
-- report/export fingerprints recomputed and verified before PASS
-- any execution/publication authority escalation fails closed
-- explicit issue codes make missing/contradictory/integrity failures inspectable rather than silently repaired
-- deterministic tests cover valid pair, stale/tampered parent, citation divergence, uncertainty suppression, scenario divergence and authority escalation
+- schema `bor.alpha-read-model.v1`
+- input requires a report/export pair whose S14 consistency result is PASS
+- preserve report ID, series ID, version, asOf and canonical report/export fingerprints
+- preserve exact canonical citation IDs, Bull/Base/Bear scenarios and contradicting-evidence IDs
+- preserve unresolved disagreements and data gaps explicitly
+- expose report summary/thesis without manufacturing evidence or directional certainty
+- fixed `executionAuthority=false`, `reportPublicationAuthority=false`, `botDependency=false`
+- deterministic content fingerprint over the canonical read-model payload
+- fail closed on stale/tampered/inconsistent parent artifacts or authority escalation
+- deterministic tests cover valid projection, consistency failure, parent mismatch/tamper and authority escalation
 
 ### Product / safety boundary
-Read-only research/report consistency verification only. No broker/exchange credentials, orders, BOT portfolio mutation, Risk bypass, provider calls, public publishing, database mutation, deployment mutation, or BOT dependency. Verifier may reject artifacts; it may never repair or manufacture evidence.
+Read-only BOR research/report consumer contract only. No broker/exchange credentials, orders, BOT portfolio mutation, Risk bypass, provider calls, public publishing, database mutation, deployment mutation, or BOT dependency. The projection may expose canonical uncertainty; it may never suppress, repair, infer, or manufacture Evidence.
 
 ### Rollback
-Repository-only revert of S14 branch/PR. S11 report artifacts, S12 exports and S13 deployment contract remain canonical and unchanged.
+Repository-only revert of S15 branch/PR. S11–S14 canonical artifacts and gates remain unchanged.
 
 ### Research review / constraints
-DI-001/003/004, AIML-005/006, BOR-S8-E1 through BOR-S13-E1, `REPORT_ARTIFACT_CONTRACT_V1.md`, and `REPORT_EXPORT_CONTRACT_V1.md` reviewed. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. Consistency verification is a gate, not a synthesis layer: uncertainty and contradictory evidence remain explicit.
+DI-001/003/004, AIML-005/006 and BOR-S8-E1 through BOR-S14-E1 constrain S15. BOR-S15-H1/E1 preserves Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. UI/read models are consumers of verified artifacts, never a new synthesis or authority layer.
 
-### Verification / result
-- Implemented `bor.report-consistency.v1` with deterministic PASS/FAIL and explicit issue codes.
-- Recomputes report/export fingerprints before PASS.
-- Verifies parent report identity/version/asOf/fingerprint, canonical citation equality, exact scenario/counterevidence preservation, disagreement/data-gap preservation, and fixed no-authority boundary.
-- Negative tests cover stale/tampered parent, authority escalation, citation divergence, scenario divergence, disagreement suppression, and data-gap suppression.
-- PR #19 head `c338cebc2244865dc87c8864ff45639f79946ed2` passed BLACK ORACLE REPORT CI run #61.
-- **BOR-S14-E1: ADOPT.**
+### Verification result
+- PR #20 code head `c75c3465a0588b6937beee3e59514e1d63a7b81a` passed BLACK ORACLE REPORT CI #65.
+- Typecheck, build and full deterministic tests passed.
+- Projection independently re-runs S14 consistency, preserving parent fingerprints, canonical citations, Bull/Base/Bear/counterevidence, disagreements and data gaps.
+- Authority remains fixed false and BOT dependency remains false.
+- BOR-S15-E1: **ADOPT**.
 
 ### Exact next gate
-Run docs-inclusive final CI on the documented S14 head → merge PR #19 only if green. After merge, select the highest-priority unblocked frozen-Alpha package; keep independent Railway runtime/database provisioning explicitly HOLD until capacity is available.
+Final docs-inclusive CI green → squash-merge PR #20 → begin the highest-priority unblocked frozen-Alpha consumer/API surface package; do not bypass the independent Railway runtime/database capacity blocker.
 
 ## Current blockers
 - **CONFIRMED external:** Railway free-plan resource provision limit blocks independent BOR runtime/database provisioning.
-- Current Railway `Black Oracle` production contains only legacy `black-oracle-web` / paper services; no BOR service is present, and those resources remain forbidden for BOR reuse.
+- Existing Railway `Black Oracle` services remain legacy BOT/paper/web infrastructure and forbidden for BOR reuse.
 - PR #16 remains documentation-only Global Intelligence research outside frozen Alpha implementation.
 - Repository-only Alpha work is unblocked.
 
 ## Cycle exit record
 - Phase: **VERIFY/DOCUMENT COMPLETE → FINAL CI / MERGE**
-- Research result: **BOR-S14-E1 ADOPT**.
-- Single next priority after safe S14 merge: next frozen-Alpha repository-only package, with Railway deployment gate kept explicit.
+- Single next priority: final CI and merge of BOR-S15, then select the next frozen-Alpha consumer/API package.
