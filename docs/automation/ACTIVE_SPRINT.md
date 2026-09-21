@@ -1,4 +1,4 @@
-# ACTIVE SPRINT — BOR Alpha Collector Integration
+# ACTIVE SPRINT — BOR Alpha Independent Runtime Infrastructure
 
 Date: **2026-09-21**
 Target release: **2026-10-20 — Alpha v0.1**
@@ -12,67 +12,58 @@ Status: **IN PROGRESS**
 - BOR-S3 append-only Evidence Store.
 - BOR-S4 persistent SQL adapter contract.
 - CLEANUP-01 migration ownership audit.
-- BOR-S5 Source/NARS ingestion — merged as `2643fcb9a3f6f5106458b69f83472e83c2c0f3c6`.
-- **BOR-S6 Collector/NARS adapter + bounded ingestion cycle — merged #8 as `6fb72904d9584738460c828edd70fbe729e934cd`.**
+- BOR-S5 Source/NARS ingestion.
+- BOR-S6 bounded Collector/NARS ingestion cycle — merged #8 as `6fb72904d9584738460c828edd70fbe729e934cd`.
 
-## BOR-S6 final record
-
-### Delivered
-- `bor.collector-envelope.v1`
-- deterministic adapter into `bor.source-record.v1`
-- `bor.collector-cycle.v1` with deterministic item/cycle identities
-- per-item `APPENDED / ALREADY_PRESENT / REJECTED`
-- cycle `COMPLETE / PARTIAL / FAILED / EMPTY`
-- explicit attempted/appended/already-present/rejected counts
-- successful records preserved alongside explicit rejected outcomes
-- all accepted records route only through `SourceEvidenceIngestor`
-- `executionAuthority=false`
-- `reportPublicationAuthority=false`
-
-### Research / precedent
-Reviewed **DI-001, DI-003, DI-004, AIML-005, AIML-006** and legacy NARS **#39/#41/#43**.
-Research record: `docs/research/2026-09-21-s6-collector-cycle-review.md`.
-Disposition: **ADOPT for Alpha contract use**.
-
-### Verification
-- PR: **#8**
-- implementation CI #14: **PASS**
-- final PR head CI #16: **PASS**
-- typecheck: PASS
-- build: PASS
-- full repository tests: PASS
-- architecture: `docs/architecture/COLLECTOR_INGESTION_CONTRACT_V1.md`
-- deployment: none by design
-- runtime/database mutation: none
-
-### Safety / rollback
-BOR still has **NO trading authority**. No broker credentials, orders, BOT portfolio/database access, Risk authority, network scheduler or production DB provisioning were introduced. Rollback is repository revert / stop invoking S6; historical Evidence remains append-only.
-
-## Current deployment state
-- Railway contains only the legacy combined **Black Oracle** project and historical services.
-- No independent BOR Railway project/service/database is provisioned.
-- This is now the next infrastructure gate rather than a code blocker.
-
-## Next work package — BOR-S7 independent runtime/database provisioning gate
+## Active — BOR-S7 Independent runtime/database provisioning gate
 
 ### Objective
-Provision BOR as an independently deployable runtime/database target without reusing BOT execution state or credentials, then bind the already-tested SQL Evidence adapter under explicit rollback and no-trading-authority controls.
+Make BOR independently deployable without using the legacy combined Black Oracle runtime, BOT database, broker credentials, trading state or execution authority. Establish a minimal health/readiness HTTP runtime first, then provision an isolated Railway project/service. Database provisioning is allowed only when persistence is genuinely durable and rollback is non-destructive.
 
-### Preconditions / boundaries
-- preserve current BOR contracts and append-only Evidence semantics;
-- no BOT database dependency;
-- no broker/private trading credentials;
-- no destructive migration of legacy Evidence;
-- provider secrets remain server-only;
-- rollback must stop writers/deployments without deleting historical Evidence.
+### Acceptance criteria
+- Add a minimal BOR HTTP runtime with `/health` and `/version` surfaces backed by the existing runtime authority contract.
+- Runtime must fail closed if forbidden trading/broker environment variable names are present.
+- Health output must never expose environment values or secrets.
+- Add production `start` script and deterministic runtime server tests.
+- Deploy from `hanul442/black_oracle_report` into a new independent Railway project/service, not the legacy Black Oracle project.
+- Railway service uses an explicit healthcheck and has no trading/broker secrets.
+- Do not attach BOR to BOT/legacy database.
+- Persisted Evidence database may be provisioned only using a durable provider/volume. Do not create an ephemeral Postgres service and call it production-ready.
+- If durable DB provisioning requires provider organization/cost confirmation not available in-chat, record that exact blocker and continue with the independently deployable runtime.
+- No Evidence rows are deleted as rollback.
+
+### Product / safety boundary
+- BOR has **NO trading authority**.
+- No broker credentials, private exchange keys, order path, BOT portfolio mutation, BOT database dependency or Risk authority.
+- Runtime is read/write authority only for BOR-owned research/evidence state once an independent DB is attached.
+- Legacy Railway Black Oracle project remains unchanged.
+
+### Rollback path
+Disable/remove the new isolated BOR Railway service or revert the runtime PR. Do not mutate legacy Black Oracle services and do not delete historical Evidence. Database rollback is stop-writes/roll-forward only.
 
 ### Exact next gate
-`inspect available Railway/database provisioning capabilities → record infra plan/rollback → provision isolated BOR target if no credential/cost/destructive blocker → smoke health + Evidence persistence boundary → document/deploy report`.
+`plan + research review → minimal health runtime + tests → BOR CI green → merge → create isolated Railway project/service → verify deployment health → attach durable independent database only if provider/volume gate is safely satisfied`.
 
-## Cycle exit record
-- Phase: **BOR-S6 COMPLETE / MERGED**
-- Merge: `6fb72904d9584738460c828edd70fbe729e934cd`
-- Tests: CI #14 PASS; final CI #16 PASS
-- Deployment: none
-- Blockers: none for S6
-- Single next priority: **BOR-S7 independent runtime/database provisioning gate**
+## Research / precedent review
+- DI-001 — runtime/build/deployment identity must be explicit and replayable.
+- DI-003 — production Evidence still preserves publication/observation time; deployment must not alter time semantics.
+- DI-004 — provenance/snapshot replay survives infrastructure changes.
+- BOR-S1 — runtime authority contract forbids trading/broker environment variables and BOT dependency.
+- BOR-S4 — SQL Evidence adapter is provider-agnostic and append-first.
+- BOR-S6 — collector runtime has no execution/report-publication authority.
+- Railway persistent database precedent: Postgres persistence requires durable volume; an unmounted image service is not sufficient.
+
+Research disposition: **REFERENCE / infrastructure constraint.** No trading or report-publication authority is adopted.
+
+## Current infrastructure state
+- Railway has legacy `Black Oracle` and `SOCIAL VEGAS` projects only.
+- No dedicated BOR project/service/database exists.
+- Legacy Black Oracle services must not be changed.
+
+## Next ordered Alpha work
+1. BOR-S7 independent HTTP runtime + Railway service.
+2. Durable independent Evidence database provisioning/binding.
+3. Organizer/Research Analyst pipeline.
+4. Specialist/Red Team/Research Council evaluation.
+5. Versioned thesis/Bull-Base-Bear/report archive.
+6. Citation/consistency checks and PDF/export.
