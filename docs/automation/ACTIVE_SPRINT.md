@@ -3,7 +3,7 @@
 Date: **2026-09-21**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **IN PROGRESS — LIVE DEPLOYMENT CAPACITY BLOCKED**
+Status: **S15 VERIFIED — FINAL CI / MERGE GATE; LIVE DEPLOYMENT CAPACITY BLOCKED**
 
 ## Completed
 - BOR-S0–S14 complete and merged.
@@ -33,10 +33,17 @@ Read-only BOR research/report consumer contract only. No broker/exchange credent
 Repository-only revert of S15 branch/PR. S11–S14 canonical artifacts and gates remain unchanged.
 
 ### Research review / constraints
-Review DI-001/003/004, AIML-005/006, BOR-S8-E1 through BOR-S14-E1 and the report/export/consistency contracts before implementation. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. UI/read models are consumers of verified artifacts, never a new synthesis or authority layer.
+DI-001/003/004, AIML-005/006 and BOR-S8-E1 through BOR-S14-E1 constrain S15. BOR-S15-H1/E1 preserves Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. UI/read models are consumers of verified artifacts, never a new synthesis or authority layer.
+
+### Verification result
+- PR #20 code head `c75c3465a0588b6937beee3e59514e1d63a7b81a` passed BLACK ORACLE REPORT CI #65.
+- Typecheck, build and full deterministic tests passed.
+- Projection independently re-runs S14 consistency, preserving parent fingerprints, canonical citations, Bull/Base/Bear/counterevidence, disagreements and data gaps.
+- Authority remains fixed false and BOT dependency remains false.
+- BOR-S15-E1: **ADOPT**.
 
 ### Exact next gate
-Research review recorded → implement S15 projection + deterministic tests → typecheck/build/full tests → verify parent fingerprint/citation/scenario/uncertainty/no-authority invariants → document → PR/CI → merge only if green.
+Final docs-inclusive CI green → squash-merge PR #20 → begin the highest-priority unblocked frozen-Alpha consumer/API surface package; do not bypass the independent Railway runtime/database capacity blocker.
 
 ## Current blockers
 - **CONFIRMED external:** Railway free-plan resource provision limit blocks independent BOR runtime/database provisioning.
@@ -45,5 +52,5 @@ Research review recorded → implement S15 projection + deterministic tests → 
 - Repository-only Alpha work is unblocked.
 
 ## Cycle exit record
-- Phase: **PLAN COMPLETE → RESEARCH REVIEW**
-- Single next priority: BOR-S15 Alpha consumer read-model contract.
+- Phase: **VERIFY/DOCUMENT COMPLETE → FINAL CI / MERGE**
+- Single next priority: final CI and merge of BOR-S15, then select the next frozen-Alpha consumer/API package.
