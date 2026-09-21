@@ -22,3 +22,6 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: node --test dist/**/*.test.js
+      - name: Verify independent Railway runtime config
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; const c=JSON.parse(fs.readFileSync('railway.json','utf8')); if(c.build?.buildCommand!=='npm ci --ignore-scripts && npm run build') throw new Error('unexpected Railway build command'); if(c.deploy?.startCommand!=='npm start') throw new Error('unexpected Railway start command'); if(c.deploy?.healthcheckPath!=='/health') throw new Error('Railway healthcheck must be /health');"
