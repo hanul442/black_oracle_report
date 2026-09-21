@@ -61,8 +61,15 @@ export function createRedTeamChallenge(bundle:ResearchBundle, review:AnalystRevi
 export function createResearchCouncilDecision(review:AnalystReview,input:ResearchCouncilInput):Readonly<ResearchCouncilDecision>{
   noAuthority(input); if(text(input.analystReviewId,'analystReviewId')!==review.reviewId) throw new Error('council analystReviewId mismatch'); const t=time(input.asOf,'asOf'); if(t<Date.parse(review.asOf)) throw new Error('council asOf cannot precede analyst review'); confidence(input.confidence);
   const srIds=input.specialistReviews.map(x=>x.reviewId), rtIds=input.redTeamChallenges.map(x=>x.challengeId); unique(srIds,'specialist review IDs'); unique(rtIds,'red-team challenge IDs');
-  for(const x of input.specialistReviews) if(x.analystReviewId!==review.reviewId||Date.parse(x.asOf)>t) throw new Error('council specialist lineage/chronology mismatch');
-  for(const x of input.redTeamChallenges) if(x.analystReviewId!==review.reviewId||Date.parse(x.asOf)>t) throw new Error('council red-team lineage/chronology mismatch');
+  for(const x of input.specialistReviews) {
+    if(x.schemaVersion!==SPECIALIST_REVIEW_SCHEMA_VERSION||x.executionAuthority!==false||x.reportPublicationAuthority!==false) throw new Error('council specialist artifact authority/schema mismatch');
+    if(x.analystReviewId!==review.reviewId||Date.parse(x.asOf)>t) throw new Error('council specialist lineage/chronology mismatch');
+  }
+  for(const x of input.redTeamChallenges) {
+    if(x.schemaVersion!==RED_TEAM_CHALLENGE_SCHEMA_VERSION||x.executionAuthority!==false||x.reportPublicationAuthority!==false) throw new Error('council red-team artifact authority/schema mismatch');
+    if(x.analystReviewId!==review.reviewId||Date.parse(x.asOf)>t) throw new Error('council red-team lineage/chronology mismatch');
+  }
+  if(input.specialistReviews.length===0&&input.redTeamChallenges.length===0&&input.stance!=='INSUFFICIENT_DATA') throw new Error('empty council must return INSUFFICIENT_DATA');
   const gaps=unique([...review.dataGaps,...input.specialistReviews.flatMap(x=>x.dataGaps??[]),...(input.dataGaps??[])],'dataGaps');
   return Object.freeze({...input,schemaVersion:RESEARCH_COUNCIL_SCHEMA_VERSION,councilId:text(input.councilId,'councilId'),analystReviewId:review.reviewId,asOf:new Date(t).toISOString(),methodVersion:text(input.methodVersion,'methodVersion'),promptVersion:text(input.promptVersion,'promptVersion'),synthesis:text(input.synthesis,'synthesis'),unresolvedDisagreements:unique(input.unresolvedDisagreements,'unresolvedDisagreements'),dataGaps:gaps,executionAuthority:false,reportPublicationAuthority:false});
 }
