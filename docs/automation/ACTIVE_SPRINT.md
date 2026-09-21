@@ -6,47 +6,54 @@ Repository: `hanul442/black_oracle_report`
 Status: **IN PROGRESS**
 
 ## Completed
-- BOR-S0–S6 + separation cleanup complete.
-- BOR-S7 deployable runtime contract merged #9 as `54056741c7c1bfe6f2636d7706c2f31a807ab35a`.
-- BOR-S7 infrastructure activation remains blocked by Railway free-plan resource capacity; legacy runtime/database was not reused.
-- BOR-S8 grounded Organizer / Research Analyst contract merged #10 as `3bcccd01d8f203fbf023c0599ea699aafead4d6e`.
+- BOR-S0–S8 + separation cleanup complete.
+- BOR-S7 runtime contract merged; independent Railway/database activation remains blocked by Railway free-plan resource capacity.
 
-## Current blocker
-**Independent BOR Railway/database activation remains blocked by Railway free-plan resource capacity.** Legacy Black Oracle infrastructure remains intentionally isolated.
+## Active — BOR-S9 Specialist / Red Team / Research Council evaluation boundary
 
-## Active work package — BOR-S9 Specialist / Red Team / Research Council evaluation boundary
+### Delivered
+- `bor.specialist-review.v1`
+- `bor.red-team-challenge.v1`
+- `bor.research-council.v1`
+- Specialist citations restricted to verified bundle Evidence
+- Red Team counterarguments restricted to verified `CONTRADICTING` Evidence
+- parent lineage and chronology validation
+- unique Specialist/Red-Team artifact IDs
+- forged member schema/authority rejection
+- explicit unresolved disagreement and merged data-gap preservation
+- empty Council may resolve only as `INSUFFICIENT_DATA`
+- runtime stance validation
+- Council member arrays copied/frozen for immutable output
+- `executionAuthority=false`
+- `reportPublicationAuthority=false`
 
-### Objective
-Add deterministic, versioned Specialist, Red Team, and Research Council evaluation artifacts downstream of `bor.analyst-review.v1`. Preserve disagreement, counterevidence, data gaps and evaluation lineage without granting report-publication or trading authority.
+### Research
+DI-001/003/004, AIML-005/006, BOR-S8-E1; legacy BOT #200 precedent only.
+Research record: `docs/research/2026-09-21-s9-research-council-review.md`.
+Disposition: **ADOPT for Alpha evaluation-contract use**; no claim that Council improves performance.
 
-### Acceptance criteria
-- Specialist reviews are explicitly typed and trace back to an existing AnalystReview/bundle.
-- Red Team challenges reference the reviewed artifact and preserve strongest counterarguments, contradicting Evidence and unresolved gaps.
-- Council synthesis consumes bounded member reviews/challenges, records disagreement instead of erasing it, and can return `INSUFFICIENT_DATA`.
-- Referenced Evidence IDs must exist in the ResearchBundle and have verified canonical material; invented/mismatched citations fail closed.
-- Member/review IDs are unique and timestamps cannot precede their upstream artifacts.
-- Evaluation artifacts carry method/prompt/schema identity suitable for AIML-005 grounded-task evaluation.
-- `executionAuthority=false` and `reportPublicationAuthority=false` are invariant and authority escalation fails closed.
-- Deterministic tests cover valid synthesis, disagreement, citation integrity, data gaps, chronology and authority rejection.
+### Verification
+- PR: **#11**
+- BLACK ORACLE REPORT CI **#35 PASS**
+- typecheck/build/full repository tests **PASS**
+- first CI #33 exposed an optional-output typing defect; corrected before adoption
+- tests cover citation integrity, Red-Team disposition, chronology, authority escalation, forged member artifacts, empty Council abstention, immutable members and unsupported runtime stance
+- deployment/database mutation: none
 
 ### Product / safety boundary
-BOR remains research/report-only. S9 adds no provider/LLM call, broker credential, order submission, portfolio mutation, BOT database dependency, Risk bypass, report publication, production database mutation, or requirement for BOT operation. Missing or contradictory evidence remains explicit.
+No LLM/provider calls, broker credentials, orders, portfolio mutation, BOT DB dependency, Risk bypass, final report publication, database migration or deployment mutation.
 
-### Research constraints
-- DI-001/003/004: schema identity, point-in-time lineage, stable Evidence fingerprints/provenance.
-- AIML-005: grounded financial-agent evaluation must make unsupported citations observable.
-- AIML-006: Council topology is downstream of grounded Organizer/Analyst correctness and must not weaken those contracts.
-- BOR-S8-E1: verified material, citation membership/disposition and authority checks are adopted upstream constraints.
-- Legacy BOT #200 is migration precedent only; no combined runtime/authority is imported.
-
-### Rollback path
-Repository-only revert of S9 commits/contracts/tests/docs. No database migration or deployment mutation is required; canonical Evidence and S8 artifacts remain unchanged.
+### Rollback
+Repository-only revert. Canonical Evidence and S8 artifacts remain unchanged.
 
 ### Exact next gate
-Implement S9 contracts + deterministic tests → run typecheck/build/full tests → verify artifact/citation/authority invariants → record Research→Hypothesis→Experiment→Result→Adopt/Reject → PR/CI → merge if green. Railway activation remains separately blocked.
+Final documentation-head CI green → merge BOR-S9 → **BOR-S10 versioned thesis + Bull/Base/Bear scenario contract with catalysts/risks/contradicting Evidence**.
 
-## Cycle state
-- Phase: **BOR-S9 PLAN / RESEARCH REVIEW**
-- Open PRs at cycle start: none
-- Deployment blocker: Railway free-plan resource capacity
-- Single priority: **BOR-S9 Specialist / Red Team / Research Council evaluation boundary**
+## Current blocker
+Independent BOR Railway/database activation remains blocked by Railway free-plan resource capacity. Repository Alpha development is unblocked.
+
+## Cycle exit record
+- Phase: **IMPLEMENT / TEST / VERIFY / DOCUMENT COMPLETE → FINAL CI/MERGE GATE**
+- Tests: CI #35 PASS
+- Blocker: Railway capacity only
+- Single next priority: BOR-S10 versioned thesis/scenario contract
