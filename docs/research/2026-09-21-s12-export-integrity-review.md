@@ -1,7 +1,7 @@
 # BOR-S12 Export Integrity Research Review
 
 Date: 2026-09-21
-Status: EXPERIMENT
+Status: ADOPTED
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
@@ -33,7 +33,7 @@ Implement `bor.report-export.v1` with:
 No broker credential, order, BOT dependency, Risk bypass, provider call, public publication, external renderer, database mutation or deployment mutation.
 
 ### Result
-PENDING implementation/test/CI.
+Implemented `bor.report-export.v1`. PR #17 head `8bcc5b02ab9a3f706b67601ae1af7f957e3436fc` passed GitHub Actions CI #53: dependency install, typecheck, build and full deterministic Node test suite all succeeded. Verification confirms the export derives only from a fingerprint-valid S11 parent and preserves report ID/series/version/asOf, parent content fingerprint, canonical citation IDs, thesis/scenarios, contradictory-evidence references embedded in scenarios, unresolved disagreements and data gaps. Authority remains fixed false and the contract performs no external rendering or publication.
 
 ### Adopt / Reject
-PENDING.
+**ADOPT — BOR-S12-E1.** The deterministic export boundary is suitable as the canonical input to later HTML/PDF rendering. Actual renderer bytes, archive persistence and public publication remain separate gates and must not infer authority from this adoption.
