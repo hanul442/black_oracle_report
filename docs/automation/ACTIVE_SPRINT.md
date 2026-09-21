@@ -6,46 +6,49 @@ Repository: `hanul442/black_oracle_report`
 Status: **IN PROGRESS**
 
 ## Completed
-- **BOR-S0** repository/product boundary.
-- **BOR-S1** independent TypeScript runtime + CI.
-- **BOR-S2** canonical `bor.evidence.v1` point-in-time Evidence contract; PR #3 green and merged as `bcc877ca2da5c47ac6f5f145cbfd94074b327a21`.
+- **BOR-S0** — repository/product boundary bootstrap.
+- **BOR-S1** — independent TypeScript runtime, authority boundary and CI baseline.
+- **BOR-S2** — canonical `bor.evidence.v1` point-in-time Evidence contract.
+- **BOR-S3** — append-only Evidence Store port and deterministic in-memory reference implementation; PR #4 green and merged as `78b3edd160abb4d73b6056fe11958483317544f8`.
 
-## Current — BOR-S3 Append-only Evidence Store boundary
+## Active — BOR-S4 Persistent Evidence Adapter Contract
 
 ### Objective
-Introduce the persistence port and deterministic in-memory reference implementation that make Evidence append-only, replayable and independent from any concrete database. Do not provision or mutate production storage in this slice.
+Define the first concrete persistence schema/adapter boundary for BOR Evidence without provisioning or mutating a production database. Preserve S2/S3 immutable, point-in-time and no-trading-authority invariants at the storage boundary.
 
 ### Acceptance criteria
-- `EvidenceStore` port exposes append, get-by-id and fingerprint lookup/read operations only; no update/delete mutation authority.
-- Re-appending the exact same immutable packet is idempotent.
-- Reusing an `evidenceId` for different content/metadata fails closed.
-- Fingerprint lookup preserves all evidence IDs so duplicate lineage is inspectable rather than silently collapsed.
-- Returned records cannot mutate store state.
-- Store accepts only BOR `bor.evidence.v1` packets with `executionAuthority=false`.
-- Tests cover append/read, idempotency, conflicting identity, fingerprint lineage and mutation isolation.
-- Typecheck/build/tests must pass before merge.
+- Versioned SQL schema for `bor.evidence.v1` with explicit source/provenance/timestamp/fingerprint/duplicate-lineage fields.
+- Database constraints reject trading authority, invalid producer/schema identity, self-duplicate and publication-after-observation.
+- No application update/delete API; adapter exposes the existing `EvidenceStore` append/read contract only.
+- Persistence driver is injected behind a minimal query boundary so CI needs no live DB credentials.
+- Exact re-append is idempotent; conflicting reuse of an Evidence ID fails closed.
+- Fingerprint lookup preserves every observation in deterministic order.
+- Schema/adapter tests run without network or secrets.
+- Migration is additive; rollback guidance never destroys historical Evidence.
 
 ### Research review / constraints
-- **DI-001**: persistence retains explicit producer/schema identity and supports reproducible downstream experiment/report inputs.
-- **DI-003**: point-in-time `publishedAt`/`observedAt` from S2 remain immutable; storage must not replace them with write time.
-- **DI-004**: append-only identity and deterministic lookup are prerequisites for snapshot-addressable replay and later report reconstruction.
-- Research lineage remains **Research → Hypothesis → Experiment → Result → Adopt/Reject**; this store is infrastructure, not evidence that any agent topology is superior.
+- **DI-001** — schema/version/producer identity and replay metadata remain explicit.
+- **DI-003** — `published_at` and `observed_at` remain distinct; publication-after-observation fails closed.
+- **DI-004** — provenance and optional snapshot reference remain persisted for replay/citation audit.
+- Existing BOR research decision continues to defer agent expansion until Evidence persistence is independently testable.
+- Research lineage remains **Research → Hypothesis → Experiment → Result → Adopt/Reject**; this persistence work does not constitute an agent/model adoption result.
 
-### Safety / product boundary
-- BOR has no trading authority, broker credentials, order path or BOT portfolio mutation.
-- No concrete database credentials or deployment changes in S3.
-- No update/delete methods are introduced.
-- Missing evidence stays missing; the store does not fabricate or enrich packets.
+### Product / safety boundary
+- BOR has **NO trading authority**; persisted rows encode `execution_authority = false`.
+- No BOT runtime/database import or access.
+- No broker credentials, orders, portfolio mutation or Risk authority.
+- No production DB provisioning in S4; schema + adapter + deterministic tests only.
+- Missing, contradictory and unresolved Evidence remains explicit and auditable.
 
 ### Rollback
-S3 is additive and isolated to the BOR repository. Revert the S3 merge commit if the persistence contract proves unsuitable; no external database state is created by this slice.
+S4 is additive code/schema/documentation on an isolated branch. Rollback is closing/reverting the PR. No production database is provisioned or mutated. If this schema is later applied, rollback must disable new writes while preserving historical Evidence rather than dropping Evidence tables.
 
 ### Exact next gate
-Implement port + reference store + tests → run BOR CI → merge only when green → then begin **BOR-S4 concrete independent database schema/adapter**.
+Typecheck/build/tests must pass on the PR head before merge. After merge, **BOR-S5 Source/NARS ingestion boundary** becomes next; actual database provisioning remains a separately reviewed infrastructure gate.
 
 ## Cycle exit record
-- Phase: **PLAN / RESEARCH REVIEW complete; implementation next**
+- Phase: **PLAN + RESEARCH REVIEW COMPLETE → IMPLEMENT**
 - Research reviewed: DI-001, DI-003, DI-004
-- Deployment: none
-- Blockers: independent deploy target/database not yet provisioned; does not block S3
-- Alpha status: S0/S1/S2 complete; S3 active
+- Deployment: none by design
+- Blockers: independent deploy target/database unprovisioned; intentionally not required for deterministic S4 adapter work
+- Alpha status: S0/S1/S2/S3 complete; S4 active
