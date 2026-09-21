@@ -33,7 +33,7 @@ export class ReportArchive {
   append(report:Readonly<ReportArtifact>){
     if(report.schemaVersion!==REPORT_ARTIFACT_SCHEMA_VERSION||report.executionAuthority!==false||report.reportPublicationAuthority!==false)throw new Error('invalid report artifact');
     if(this.#byId.has(report.reportId))throw new Error('report artifact ID already archived');
-    const {contentFingerprint,...rest}=report;if(fingerprint(rest)!==contentFingerprint)throw new Error('report content fingerprint mismatch');
+    const {contentFingerprint,executionAuthority:_executionAuthority,reportPublicationAuthority:_reportPublicationAuthority,...core}=report;if(fingerprint(core)!==contentFingerprint)throw new Error('report content fingerprint mismatch');
     const versions=this.#series.get(report.seriesId)??[];const prev=versions.at(-1);if(prev&&(report.version<=prev.version||Date.parse(report.asOf)<=Date.parse(prev.asOf)))throw new Error('report series version/asOf must increase monotonically');
     this.#byId.set(report.reportId,report);this.#series.set(report.seriesId,[...versions,report]);return report;
   }
