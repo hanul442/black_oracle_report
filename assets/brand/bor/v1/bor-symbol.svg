@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">BOR symbol</title>
+  <defs>
+    <linearGradient id="bor-metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111F"/>
+      <stop offset="0.55" stop-color="#132B46"/>
+      <stop offset="1" stop-color="#506A84"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#bor-metal)" fill-rule="evenodd"
+        d="M128 20 232 214H24L128 20Zm0 66-50 94h100l-50-94Z"/>
+  <path fill="#AAB7C4" opacity=".32" d="M68 180h120l-12 22H56z"/>
+</svg>
