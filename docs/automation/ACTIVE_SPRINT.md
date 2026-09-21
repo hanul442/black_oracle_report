@@ -41,5 +41,7 @@ Research review recorded → implement report artifact/archive + tests → typec
 Independent BOR Railway/database activation remains blocked by Railway free-plan resource capacity. Repository Alpha development is unblocked.
 
 ## Cycle exit record
-- Phase: **PLAN COMPLETE → RESEARCH REVIEW**
-- Single next priority: BOR-S11 report artifact/archive integrity boundary
+- Phase: **VERIFY COMPLETE → DOCUMENT / FINAL CI**
+- Verification: CI #48 passed typecheck, build, and full tests after fixing fingerprint-domain mismatch and aligning the S11 fixture with the S9 abstention contract.
+- Research result: **BOR-S11-E1 ADOPT**.
+- Single next priority: final docs-inclusive CI → merge PR #15 if green → begin BOR-S12 export/PDF integrity boundary
