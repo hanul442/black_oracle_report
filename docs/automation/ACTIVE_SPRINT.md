@@ -1,4 +1,4 @@
-# ACTIVE SPRINT — BOR Alpha Independent Runtime Infrastructure
+# ACTIVE SPRINT — BOR Alpha Research Pipeline Foundation
 
 Date: **2026-09-21**
 Target release: **2026-10-20 — Alpha v0.1**
@@ -7,46 +7,58 @@ Status: **IN PROGRESS**
 
 ## Completed
 - BOR-S0–S6 + separation cleanup complete.
-- **BOR-S7 repository runtime contract — merged #9 as `54056741c7c1bfe6f2636d7706c2f31a807ab35a`.**
+- BOR-S7 deployable runtime contract merged #9 as `54056741c7c1bfe6f2636d7706c2f31a807ab35a`.
+- BOR-S7 infrastructure activation remains blocked by Railway free-plan resource capacity; legacy runtime/database was not reused.
 
-## BOR-S7 result
-
-### Delivered
-- deployable Node runtime with `GET /health` and `GET /version`;
-- fail-closed broker/trading environment-name detection;
-- no secret values returned by health surfaces;
-- `tradingAuthority=false`, `botDependency=false`;
-- production start command;
-- runtime deployment contract.
-
-### Verification
-- implementation BOR CI #20 — PASS;
-- final documentation-head BOR CI #23 — PASS;
-- PR #9 merged as `54056741c7c1bfe6f2636d7706c2f31a807ab35a`.
-
-### Infrastructure attempt
-Attempted to create a new private Railway project named `BLACK ORACLE REPORT` in the existing workspace.
-
-**BLOCKED:** Railway returned `Free plan resource provision limit exceeded`.
-
-No legacy Black Oracle project/service was modified. No fallback to shared runtime/database was used because that would violate the independent-product boundary.
-
-### Database gate
-- no independent BOR DB provisioned;
-- no ephemeral unmounted Postgres accepted;
-- no BOT/legacy DB coupling introduced;
-- durable DB remains coupled to the same infrastructure-capacity/provider gate.
-
-### Safety / rollback
-No broker credentials, orders, BOT state, Risk authority or historical Evidence were changed. Repository runtime can be reverted independently.
-
-## Active next safe work package — BOR-S8 Organizer / Research Analyst pipeline contract
+## Active — BOR-S8 Organizer / Research Analyst contract
 
 ### Objective
-Continue Alpha progress without waiting on infrastructure capacity by defining the authority-safe research transformation from canonical Evidence into organized research inputs and analyst outputs.
+Define an authority-safe Evidence → Organizer → AnalystReview transformation before LLM orchestration, Specialist/Red Team/Council behavior or report publication.
+
+### Implemented
+- `bor.research-bundle.v1`
+- `bor.analyst-review.v1`
+- explicit SUPPORTING / CONTRADICTING / CONTEXT / UNRESOLVED disposition
+- point-in-time knowledge cutoff
+- analysis material must hash to canonical Evidence fingerprint
+- missing canonical material becomes explicit `MISSING_CANONICAL_CONTENT:<evidenceId>` data gap
+- citations must belong to the bundle and use verified material
+- supporting/counterevidence disposition relabeling fails closed
+- facts / inferences / assumptions / data gaps remain distinct
+- `executionAuthority=false`
+- `reportPublicationAuthority=false`
+
+### Research review
+DI-001/003/004, AIML-005/006, BOR-S2/S5/S6 and legacy BOT #200 as migration precedent only.
+Research record: `docs/research/2026-09-21-s8-organizer-analyst-review.md`.
+Disposition: **ADOPT for Alpha research-pipeline contract use**.
+
+### Safety boundary
+No LLM/provider calls, final report publication, BOT database/runtime dependency, broker/order/portfolio/Risk/trading authority, production DB mutation or deployment.
+
+### Architecture
+`docs/architecture/GROUNDED_RESEARCH_PIPELINE_V1.md`
+
+### Verification
+- PR: **#10**
+- implementation/final contract head BOR CI #28 — **PASS**
+- typecheck/build/full repository tests — **PASS**
+- tests cover fingerprint mismatch, future knowledge, missing material, invented citation, contradiction preservation, disposition relabeling and authority escalation
+
+### Rollback
+Repository-only revert. S0-S7 and historical Evidence remain unchanged.
 
 ### Exact next gate
-Plan/research review → Organizer/Research Analyst contracts with explicit Evidence IDs, contradictions/data gaps and no publication/trading authority → deterministic tests → BOR CI green → merge.
+Final documentation-head CI green → merge BOR-S8 → **Specialist / Red Team / Research Council evaluation boundary**.
 
 ## Current blocker
-**BOR-S7 infrastructure provisioning:** Railway free-plan resource limit. Resolution requires freeing/upgrading Railway resources or selecting another explicitly authorized durable provider. This is an infrastructure blocker only; it does not block repository Alpha development.
+BOR independent Railway/database activation remains blocked by Railway free-plan resource capacity. This does not block repository Alpha development.
+
+## Cycle exit record
+- Phase: **IMPLEMENT / TEST / VERIFY / DOCUMENT COMPLETE → FINAL CI/MERGE GATE**
+- Concrete change: grounded Organizer + Research Analyst contract
+- Research: DI-001/003/004; AIML-005/006; legacy BOT #200 precedent
+- Tests: BOR CI #28 PASS
+- Deployment: none
+- Blocker: independent Railway capacity only
+- Single next priority: Specialist / Red Team / Research Council evaluation boundary
