@@ -29,7 +29,12 @@ The existing authority-free HTTP runtime can be made independently deployable wi
 No broker/exchange credentials, orders, BOT portfolio mutation, Risk bypass, BOT database reuse, destructive migration, or publication authority. Existing legacy Railway services are read-only context and must remain untouched.
 
 ### Result
-PENDING.
+- Added deterministic Railway build/start/`/health` configuration and CI validation.
+- CI #57 passed dependency install, typecheck, build, full deterministic tests, and Railway config verification.
+- Attempted to create a new isolated `BLACK ORACLE REPORT` Railway project in the existing workspace.
+- Railway rejected provisioning with: `Free plan resource provision limit exceeded. Please upgrade to provision more resources!`
+- No legacy `Black Oracle` service/project was modified or reused.
+- Therefore repository deployability controls are verified, but actual isolated deployment, endpoint verification, and durable BOR database provisioning remain externally blocked by account capacity.
 
 ### Adopt / Reject
-PENDING.
+**ADOPT repository-side S13 deployment contract; HOLD runtime deployment verification.** The code/config boundary is safe to merge because it changes no live infrastructure and preserves zero authority. Do not claim BOR runtime/database is deployed until an isolated project can actually be provisioned and `/health` + `/version` are verified.
