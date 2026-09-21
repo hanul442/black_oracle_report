@@ -1,7 +1,7 @@
 # BOR-S9 Specialist / Red Team / Research Council Research Review
 
 Date: 2026-09-21
-Status: TEST
+Status: ADOPT
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
@@ -34,7 +34,7 @@ Implement:
 No LLM/provider call, report publication, trading/order/portfolio authority, BOT DB dependency, Risk bypass, database migration or deployment mutation.
 
 ### Result
-Pending final CI verification.
+**PASS.** BLACK ORACLE REPORT CI #35 completed successfully: typecheck PASS, build PASS, full repository tests PASS. The corrected output contract, forged-member authority/schema checks, empty-Council abstention gate, runtime stance validation, and frozen member arrays all passed.
 
-### Adopt / Reject gate
-**ADOPT** only if typecheck/build/full tests pass and forged/invented/mis-timed artifacts fail closed while disagreement, counterevidence and data gaps remain inspectable.
+### Adopt / Reject
+**ADOPT for Alpha evaluation-contract use.** This adoption establishes grounded comparison artifacts only; it does not claim Council outperforms a single analyst and does not activate provider calls, report publication or trading authority.
