@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title">
+  <title id="title">BOR brand board v1</title>
+  <rect width="1200" height="760" fill="#F7F9FB"/>
+  <text x="64" y="72" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="7" fill="#07111F">BOR / LOGO SYSTEM / V1</text>
+  <line x1="64" y1="98" x2="1136" y2="98" stroke="#C8D1DA"/>
+  <text x="64" y="160" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="4" fill="#506174">PRIMARY WORDMARK</text>
+  <text x="64" y="328" font-family="Inter Tight, Inter, Arial, sans-serif" font-size="150" font-weight="800" letter-spacing="-8" fill="#07111F">B</text>
+  <g transform="translate(245 182) scale(.68)">
+    <defs>
+      <linearGradient id="m" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#07111F"/><stop offset=".58" stop-color="#132B46"/><stop offset="1" stop-color="#506A84"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#m)" fill-rule="evenodd" d="M128 20 232 214H24L128 20Zm0 66-50 94h100l-50-94Z"/>
+  </g>
+  <text x="442" y="328" font-family="Inter Tight, Inter, Arial, sans-serif" font-size="150" font-weight="800" letter-spacing="-8" fill="#07111F">R</text>
+  <text x="70" y="380" font-family="Inter, Arial, sans-serif" font-size="25" letter-spacing="9" fill="#31465C">BLACK ORACLE RESEARCH</text>
+
+  <text x="760" y="160" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="4" fill="#506174">PURPOSE</text>
+  <text x="760" y="215" font-family="Inter, Arial, sans-serif" font-size="30" letter-spacing="6" fill="#07111F">EVIDENCE</text>
+  <text x="760" y="260" font-family="Inter, Arial, sans-serif" font-size="30" letter-spacing="6" fill="#07111F">INTELLIGENCE</text>
+  <text x="760" y="305" font-family="Inter, Arial, sans-serif" font-size="30" letter-spacing="6" fill="#07111F">A CLEARER TOMORROW</text>
+
+  <line x1="64" y1="450" x2="1136" y2="450" stroke="#C8D1DA"/>
+  <text x="64" y="500" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="4" fill="#506174">SYMBOL</text>
+  <g transform="translate(64 520) scale(.72)">
+    <path fill="#07111F" fill-rule="evenodd" d="M128 20 232 214H24L128 20Zm0 66-50 94h100l-50-94Z"/>
+  </g>
+
+  <text x="350" y="500" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="4" fill="#506174">CORE PALETTE</text>
+  <rect x="350" y="535" width="120" height="96" rx="12" fill="#07090C"/>
+  <rect x="490" y="535" width="120" height="96" rx="12" fill="#11151B"/>
+  <rect x="630" y="535" width="120" height="96" rx="12" fill="#4C9FFF"/>
+  <rect x="770" y="535" width="120" height="96" rx="12" fill="#65D8F4"/>
+  <text x="350" y="662" font-family="Inter, Arial, sans-serif" font-size="16" fill="#07111F">Obsidian</text>
+  <text x="490" y="662" font-family="Inter, Arial, sans-serif" font-size="16" fill="#07111F">Graphite</text>
+  <text x="630" y="662" font-family="Inter, Arial, sans-serif" font-size="16" fill="#07111F">Intelligence</text>
+  <text x="770" y="662" font-family="Inter, Arial, sans-serif" font-size="16" fill="#07111F">Evidence</text>
+
+  <text x="64" y="724" font-family="Inter, Arial, sans-serif" font-size="14" letter-spacing="4" fill="#718096">LOCKED 2026-09-21 · BOR DISCOVERS, VERIFIES AND EXPLAINS.</text>
+</svg>
