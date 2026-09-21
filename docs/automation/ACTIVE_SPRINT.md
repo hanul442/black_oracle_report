@@ -6,54 +6,41 @@ Repository: `hanul442/black_oracle_report`
 Status: **IN PROGRESS**
 
 ## Completed
-- BOR-S0–S8 + separation cleanup complete.
-- BOR-S7 runtime contract merged; independent Railway/database activation remains blocked by Railway free-plan resource capacity.
+- BOR-S0–S9 complete and merged.
+- BOR-S9 introduced grounded Specialist / Red Team / Research Council evaluation artifacts with execution and publication authority fixed false.
+- Independent Railway/database activation remains blocked by Railway free-plan resource capacity; repository Alpha development is unblocked.
 
-## Active — BOR-S9 Specialist / Red Team / Research Council evaluation boundary
+## Active — BOR-S10 Versioned thesis + Bull/Base/Bear scenario contract
 
-### Delivered
-- `bor.specialist-review.v1`
-- `bor.red-team-challenge.v1`
-- `bor.research-council.v1`
-- Specialist citations restricted to verified bundle Evidence
-- Red Team counterarguments restricted to verified `CONTRADICTING` Evidence
-- parent lineage and chronology validation
-- unique Specialist/Red-Team artifact IDs
-- forged member schema/authority rejection
-- explicit unresolved disagreement and merged data-gap preservation
-- empty Council may resolve only as `INSUFFICIENT_DATA`
-- runtime stance validation
-- Council member arrays copied/frozen for immutable output
-- `executionAuthority=false`
-- `reportPublicationAuthority=false`
+### Objective
+Create a deterministic, versioned thesis/scenario artifact downstream of a valid Research Council decision, preserving citation lineage, contradictory evidence, catalysts, risks, invalidation conditions, and explicit data gaps.
 
-### Research
-DI-001/003/004, AIML-005/006, BOR-S8-E1; legacy BOT #200 precedent only.
-Research record: `docs/research/2026-09-21-s9-research-council-review.md`.
-Disposition: **ADOPT for Alpha evaluation-contract use**; no claim that Council improves performance.
-
-### Verification
-- PR: **#11**
-- BLACK ORACLE REPORT CI **#35 PASS**
-- typecheck/build/full repository tests **PASS**
-- first CI #33 exposed an optional-output typing defect; corrected before adoption
-- tests cover citation integrity, Red-Team disposition, chronology, authority escalation, forged member artifacts, empty Council abstention, immutable members and unsupported runtime stance
-- deployment/database mutation: none
+### Acceptance criteria
+- schema `bor.thesis-scenario.v1`
+- exactly one BULL, BASE and BEAR scenario
+- parent Council/review/bundle lineage and chronology validated
+- every cited Evidence ID must belong to the upstream ResearchBundle and be material-verified
+- `contradictingEvidenceIds` must reference upstream `CONTRADICTING` Evidence
+- catalysts, risks, invalidation conditions and data gaps remain explicit
+- Council `INSUFFICIENT_DATA` cannot be converted into an actionable directional thesis
+- artifact is immutable/versioned and fixes `executionAuthority=false` and `reportPublicationAuthority=false`
+- deterministic tests cover forged citations, missing scenario, duplicate scenario, chronology and authority escalation
 
 ### Product / safety boundary
-No LLM/provider calls, broker credentials, orders, portfolio mutation, BOT DB dependency, Risk bypass, final report publication, database migration or deployment mutation.
+Research/report artifact only. No broker credentials, orders, BOT portfolio mutation, Risk bypass, provider calls, final publication authority, database migration or deployment mutation.
 
 ### Rollback
-Repository-only revert. Canonical Evidence and S8 artifacts remain unchanged.
+Repository-only revert of S10 branch/PR. Canonical Evidence, S8 analyst artifacts and S9 Council artifacts remain unchanged.
+
+### Research review / constraints
+Review S9 Council contract and grounded pipeline precedents before implementation. Preserve Research → Hypothesis → Experiment → Result → Adopt/Reject lineage. S10 may structure scenarios but must not manufacture evidence or suppress contradiction/uncertainty.
 
 ### Exact next gate
-Final documentation-head CI green → merge BOR-S9 → **BOR-S10 versioned thesis + Bull/Base/Bear scenario contract with catalysts/risks/contradicting Evidence**.
+Research review recorded → implement S10 contract + tests → typecheck/build/full tests → verify citation/authority invariants → document → PR/CI → merge only if green.
 
 ## Current blocker
 Independent BOR Railway/database activation remains blocked by Railway free-plan resource capacity. Repository Alpha development is unblocked.
 
 ## Cycle exit record
-- Phase: **IMPLEMENT / TEST / VERIFY / DOCUMENT COMPLETE → FINAL CI/MERGE GATE**
-- Tests: CI #35 PASS
-- Blocker: Railway capacity only
-- Single next priority: BOR-S10 versioned thesis/scenario contract
+- Phase: **PLAN COMPLETE → RESEARCH REVIEW**
+- Single next priority: BOR-S10 thesis/scenario contract
