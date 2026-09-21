@@ -1,44 +1,49 @@
 # BOR-S7 Independent Runtime / Database Infrastructure Review
 
 Date: 2026-09-21
-Status: ADOPT-RUNTIME / DB-PENDING
+Status: ADOPT-RUNTIME / INFRA-BLOCKED
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
 ### Research / precedent
-- **DI-001:** deployed runtime identity and artifact revision must be explicit enough to reproduce what code was running.
+- **DI-001:** deployed runtime identity and artifact revision must be explicit.
 - **DI-003:** infrastructure must not rewrite Evidence knowledge-time semantics.
-- **DI-004:** provenance and snapshot references must survive runtime/database migration.
-- **BOR-S1:** runtime is independently ready only when no forbidden broker/trading environment names exist; `tradingAuthority=false`, `botDependency=false`.
-- **BOR-S4:** persistence is behind an injected SQL driver and append-first Evidence contract; infrastructure must not bypass this boundary.
-- **BOR-S6:** collector ingestion is deterministic and authority-free; deployment cannot silently grant new publication/trading authority.
-- **Railway persistence:** Postgres canonical storage must be durable/volume-backed; an ephemeral image service is not accepted.
+- **DI-004:** provenance/snapshot references survive runtime/database migration.
+- **BOR-S1:** no broker/trading env authority; `tradingAuthority=false`, `botDependency=false`.
+- **BOR-S4:** persistence stays behind append-first SQL Evidence adapter.
+- **BOR-S6:** collector ingestion remains deterministic and authority-free.
+- Railway persistence requires durable storage; ephemeral Postgres is not canonical Evidence storage.
 
 ### Hypothesis — BOR-S7-H1
-BOR can become independently deployable with a small HTTP health/readiness runtime and isolated Railway project while preserving all existing authority boundaries. Database provisioning can remain separately gated until durable persistence is verifiably available.
+BOR can be made independently deployable without weakening authority boundaries.
 
 ### Experiment — BOR-S7-E1
-Implemented:
-1. authority-safe `GET /health`,
-2. authority-safe `GET /version`,
-3. fail-closed health when forbidden trading env names exist,
+Implemented and verified:
+1. `GET /health`,
+2. `GET /version`,
+3. fail-closed forbidden trading environment names,
 4. no secret values in responses,
-5. production `start` command,
-6. deterministic unit tests.
+5. production start command,
+6. deterministic unit tests,
+7. isolated Railway project creation attempt after merge.
 
 ### Result
-**PASS for repository runtime.**
+**Repository/runtime PASS; infrastructure provisioning BLOCKED.**
 
-BOR CI #20:
-- typecheck PASS,
-- build PASS,
-- full repository tests PASS.
+Verification:
+- BOR CI #20 PASS,
+- final BOR CI #23 PASS,
+- PR #9 merged as `54056741c7c1bfe6f2636d7706c2f31a807ab35a`.
 
-Railway deployment verification remains the next gate.
+Railway project creation returned:
+`Free plan resource provision limit exceeded`.
+
+No legacy project/service was mutated and no shared database fallback was used.
 
 ### Adopt / Reject
-**ADOPT runtime contract for Alpha deployment after final documentation-head CI passes.**
-Database remains **PENDING** until durable independent persistence can be provisioned and verified without BOT/legacy coupling.
+- **ADOPT runtime contract** for Alpha.
+- **DEFER infrastructure activation** until independent capacity/provider is available.
+- **REJECT** using legacy BOT/combined infrastructure as a shortcut.
 
 ## Authority statement
-This work cannot create trading, order, portfolio, BOT database, broker-secret or Risk authority.
+No trading, order, portfolio, BOT database, broker-secret or Risk authority was created.
