@@ -1,7 +1,7 @@
 # BOR-S15 Alpha Consumer Read Model Research Review
 
 Date: 2026-09-21
-Status: EXPERIMENT
+Status: ADOPT
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
@@ -27,7 +27,7 @@ Implement `bor.alpha-read-model.v1` derived only from a canonical report/export 
 Read-only projection only. No evidence synthesis/repair, provider calls, broker credentials, orders, BOT dependency, Risk bypass, public publication, database mutation, or deployment mutation.
 
 ### Result
-PENDING implementation/test/CI.
+Implemented the deterministic Alpha read model. The projection independently re-runs S14 report/export consistency rather than trusting a historical PASS, preserves canonical parent identity/fingerprints, citations, Bull/Base/Bear scenarios including counterevidence, unresolved disagreements and data gaps, and fixes execution/publication/BOT dependency authority to false. PR #20 head `c75c3465a0588b6937beee3e59514e1d63a7b81a` passed BLACK ORACLE REPORT CI #65 including typecheck, build, and the full deterministic test suite.
 
 ### Adopt / Reject
-PENDING.
+**ADOPT — BOR-S15-E1.** The contract is suitable as the integrity-gated read-only boundary for frozen-Alpha UI/API consumers. Live Railway provisioning remains a separate external-capacity HOLD and is not weakened or bypassed by this adoption.
