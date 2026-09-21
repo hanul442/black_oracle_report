@@ -20,10 +20,9 @@ Define an authority-safe Evidence → Organizer → AnalystReview transformation
 - `bor.analyst-review.v1`
 - explicit SUPPORTING / CONTRADICTING / CONTEXT / UNRESOLVED disposition
 - point-in-time knowledge cutoff
-- analysis material must hash to the canonical Evidence fingerprint
+- analysis material must hash to canonical Evidence fingerprint
 - missing canonical material becomes explicit `MISSING_CANONICAL_CONTENT:<evidenceId>` data gap
-- citations must belong to the bundle
-- citations require verified material
+- citations must belong to the bundle and use verified material
 - supporting/counterevidence disposition relabeling fails closed
 - facts / inferences / assumptions / data gaps remain distinct
 - `executionAuthority=false`
@@ -32,6 +31,7 @@ Define an authority-safe Evidence → Organizer → AnalystReview transformation
 ### Research review
 DI-001/003/004, AIML-005/006, BOR-S2/S5/S6 and legacy BOT #200 as migration precedent only.
 Research record: `docs/research/2026-09-21-s8-organizer-analyst-review.md`.
+Disposition: **ADOPT for Alpha research-pipeline contract use**.
 
 ### Safety boundary
 No LLM/provider calls, final report publication, BOT database/runtime dependency, broker/order/portfolio/Risk/trading authority, production DB mutation or deployment.
@@ -41,14 +41,24 @@ No LLM/provider calls, final report publication, BOT database/runtime dependency
 
 ### Verification
 - PR: **#10**
-- deterministic tests added for fingerprint mismatch, future knowledge, missing material, invented citation, contradiction preservation, disposition relabeling and authority escalation
-- BOR CI: pending final head
+- implementation/final contract head BOR CI #28 — **PASS**
+- typecheck/build/full repository tests — **PASS**
+- tests cover fingerprint mismatch, future knowledge, missing material, invented citation, contradiction preservation, disposition relabeling and authority escalation
 
 ### Rollback
 Repository-only revert. S0-S7 and historical Evidence remain unchanged.
 
 ### Exact next gate
-Final BOR CI green → merge BOR-S8 → Specialist / Red Team / Research Council evaluation boundary.
+Final documentation-head CI green → merge BOR-S8 → **Specialist / Red Team / Research Council evaluation boundary**.
 
 ## Current blocker
 BOR independent Railway/database activation remains blocked by Railway free-plan resource capacity. This does not block repository Alpha development.
+
+## Cycle exit record
+- Phase: **IMPLEMENT / TEST / VERIFY / DOCUMENT COMPLETE → FINAL CI/MERGE GATE**
+- Concrete change: grounded Organizer + Research Analyst contract
+- Research: DI-001/003/004; AIML-005/006; legacy BOT #200 precedent
+- Tests: BOR CI #28 PASS
+- Deployment: none
+- Blocker: independent Railway capacity only
+- Single next priority: Specialist / Red Team / Research Council evaluation boundary
