@@ -1,4 +1,4 @@
-import type { AnalystReview, ResearchBundle } from './researchPipeline.js';
+import { ANALYST_REVIEW_STANCES, type AnalystReview, type ResearchBundle } from './researchPipeline.js';
 
 export const SPECIALIST_REVIEW_SCHEMA_VERSION = 'bor.specialist-review.v1' as const;
 export const RED_TEAM_CHALLENGE_SCHEMA_VERSION = 'bor.red-team-challenge.v1' as const;
@@ -39,6 +39,7 @@ function text(v:string, f:string){ const n=v.trim(); if(!n) throw new Error(`${f
 function time(v:string,f:string){ const n=Date.parse(v); if(!Number.isFinite(n)) throw new Error(`${f} must be an ISO timestamp`); return n; }
 function noAuthority(v:NoAuthority){ if(v.executionAuthority||v.reportPublicationAuthority) throw new Error('evaluation artifacts cannot grant execution or report-publication authority'); }
 function confidence(v:number|null){ if(v!==null&&(!Number.isFinite(v)||v<0||v>1)) throw new Error('confidence must be null or between 0 and 1'); }
+function stance(v:CouncilStance){ if(!ANALYST_REVIEW_STANCES.includes(v)) throw new Error(`unsupported council stance: ${v}`); return v; }
 function unique(values:readonly string[], field:string){ const a=values.map((v,i)=>text(v,`${field}[${i}]`)); if(new Set(a).size!==a.length) throw new Error(`${field} must be unique`); return Object.freeze(a); }
 function actor(a:VersionedActor):Readonly<VersionedActor>{ return Object.freeze({actorId:text(a.actorId,'actorId'),role:text(a.role,'role'),domain:text(a.domain,'domain'),methodVersion:text(a.methodVersion,'methodVersion'),promptVersion:text(a.promptVersion,'promptVersion')}); }
 function evidenceIds(bundle:ResearchBundle, ids:readonly string[], field:string){ const byId=new Map(bundle.evidence.map(e=>[e.evidenceId,e])); const out=unique(ids,field); for(const id of out){ const e=byId.get(id); if(!e) throw new Error(`${field} references Evidence outside the research bundle: ${id}`); if(!e.materialVerified) throw new Error(`${field} cannot cite Evidence without verified canonical material: ${id}`); } return out; }
@@ -46,7 +47,7 @@ function assertUpstream(review:AnalystReview,bundle:ResearchBundle){ if(review.b
 
 export function createSpecialistReview(bundle:ResearchBundle, review:AnalystReview, input:SpecialistReviewInput):Readonly<SpecialistReview>{
   noAuthority(input); assertUpstream(review,bundle); if(text(input.analystReviewId,'analystReviewId')!==review.reviewId) throw new Error('specialist analystReviewId mismatch');
-  const t=time(input.asOf,'asOf'); if(t<Date.parse(review.asOf)) throw new Error('specialist asOf cannot precede analyst review'); confidence(input.confidence);
+  const t=time(input.asOf,'asOf'); if(t<Date.parse(review.asOf)) throw new Error('specialist asOf cannot precede analyst review'); confidence(input.confidence); stance(input.stance);
   return Object.freeze({...input,schemaVersion:SPECIALIST_REVIEW_SCHEMA_VERSION,reviewId:text(input.reviewId,'reviewId'),analystReviewId:review.reviewId,actor:actor(input.actor),asOf:new Date(t).toISOString(),assessment:text(input.assessment,'assessment'),evidenceIds:evidenceIds(bundle,input.evidenceIds,'evidenceIds'),dataGaps:unique(input.dataGaps??[],'dataGaps'),executionAuthority:false,reportPublicationAuthority:false});
 }
 
@@ -59,7 +60,7 @@ export function createRedTeamChallenge(bundle:ResearchBundle, review:AnalystRevi
 }
 
 export function createResearchCouncilDecision(review:AnalystReview,input:ResearchCouncilInput):Readonly<ResearchCouncilDecision>{
-  noAuthority(input); if(text(input.analystReviewId,'analystReviewId')!==review.reviewId) throw new Error('council analystReviewId mismatch'); const t=time(input.asOf,'asOf'); if(t<Date.parse(review.asOf)) throw new Error('council asOf cannot precede analyst review'); confidence(input.confidence);
+  noAuthority(input); if(text(input.analystReviewId,'analystReviewId')!==review.reviewId) throw new Error('council analystReviewId mismatch'); const t=time(input.asOf,'asOf'); if(t<Date.parse(review.asOf)) throw new Error('council asOf cannot precede analyst review'); confidence(input.confidence); stance(input.stance);
   const srIds=input.specialistReviews.map(x=>x.reviewId), rtIds=input.redTeamChallenges.map(x=>x.challengeId); unique(srIds,'specialist review IDs'); unique(rtIds,'red-team challenge IDs');
   for(const x of input.specialistReviews) {
     if(x.schemaVersion!==SPECIALIST_REVIEW_SCHEMA_VERSION||x.executionAuthority!==false||x.reportPublicationAuthority!==false) throw new Error('council specialist artifact authority/schema mismatch');
@@ -71,5 +72,5 @@ export function createResearchCouncilDecision(review:AnalystReview,input:Researc
   }
   if(input.specialistReviews.length===0&&input.redTeamChallenges.length===0&&input.stance!=='INSUFFICIENT_DATA') throw new Error('empty council must return INSUFFICIENT_DATA');
   const gaps=unique([...review.dataGaps,...input.specialistReviews.flatMap(x=>x.dataGaps??[]),...(input.dataGaps??[])],'dataGaps');
-  return Object.freeze({...input,schemaVersion:RESEARCH_COUNCIL_SCHEMA_VERSION,councilId:text(input.councilId,'councilId'),analystReviewId:review.reviewId,asOf:new Date(t).toISOString(),methodVersion:text(input.methodVersion,'methodVersion'),promptVersion:text(input.promptVersion,'promptVersion'),synthesis:text(input.synthesis,'synthesis'),unresolvedDisagreements:unique(input.unresolvedDisagreements,'unresolvedDisagreements'),dataGaps:gaps,executionAuthority:false,reportPublicationAuthority:false});
+  return Object.freeze({...input,schemaVersion:RESEARCH_COUNCIL_SCHEMA_VERSION,councilId:text(input.councilId,'councilId'),analystReviewId:review.reviewId,asOf:new Date(t).toISOString(),methodVersion:text(input.methodVersion,'methodVersion'),promptVersion:text(input.promptVersion,'promptVersion'),specialistReviews:Object.freeze([...input.specialistReviews]),redTeamChallenges:Object.freeze([...input.redTeamChallenges]),synthesis:text(input.synthesis,'synthesis'),unresolvedDisagreements:unique(input.unresolvedDisagreements,'unresolvedDisagreements'),dataGaps:gaps,executionAuthority:false,reportPublicationAuthority:false});
 }
