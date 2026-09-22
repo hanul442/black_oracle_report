@@ -24,7 +24,9 @@ function parents() {
     {kind:'BASE' as const,narrative:'bounded',evidenceIds:['e1'],contradictingEvidenceIds:[],catalysts:[],risks:['data gap'],invalidationConditions:['material change']},
     {kind:'BEAR' as const,narrative:'downside',evidenceIds:['e1'],contradictingEvidenceIds:[],catalysts:[],risks:['reversal'],invalidationConditions:['demand persists']},
   ] as const;
-  const thesis = createThesisScenarioArtifact(bundle,review,council,{ artifactId:'t1',bundleId:'b1',analystReviewId:'a1',councilId:'c1',asOf:'2026-09-22T04:00:00Z',methodVersion:'1',thesis:'bounded thesis',scenarios });
+  // An INSUFFICIENT_DATA council may preserve scenarios/uncertainty, but must not be
+  // laundered into a directional thesis. Keep the thesis explicitly empty.
+  const thesis = createThesisScenarioArtifact(bundle,review,council,{ artifactId:'t1',bundleId:'b1',analystReviewId:'a1',councilId:'c1',asOf:'2026-09-22T04:00:00Z',methodVersion:'1',thesis:'',scenarios });
   const report = createReportArtifact(bundle,council,thesis,{reportId:'r1',seriesId:'series',version:1,asOf:'2026-09-22T04:10:00Z',title:'BOR report',summary:'bounded summary'});
   const exported = createReportExport(report,{exportId:'x1',format:'PDF'});
   return { report, exported, consistency:verifyReportExportConsistency(report,exported) };
