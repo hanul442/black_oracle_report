@@ -1,3 +1,4 @@
+import { createFileAlphaReadModelResolver } from './alphaReadModelResolver.js';
 import { createBorHttpServer } from './httpRuntime.js';
 import { BOR_PRODUCT, BOR_RUNTIME_VERSION } from './runtime.js';
 
@@ -8,7 +9,8 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 }
 
 const host = process.env.HOST?.trim() || '0.0.0.0';
-const server = createBorHttpServer(process.env);
+const resolveAlphaReadModel = createFileAlphaReadModelResolver(process.env);
+const server = createBorHttpServer(process.env, resolveAlphaReadModel);
 
 server.listen(port, host, () => {
   process.stdout.write(JSON.stringify({
