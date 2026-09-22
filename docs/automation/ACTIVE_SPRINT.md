@@ -3,7 +3,7 @@
 Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S20 COMPLETE / S21 ACTIVE**
+Status: **S20 COMPLETE / S21 ACTIVE — CI FIX VERIFICATION**
 
 ## Completed baseline
 - BOR-S0 through BOR-S20 complete.
@@ -27,16 +27,24 @@ Internal BOR artifact generation only. No broker credentials, orders, BOT state/
 ## Rollback
 Delete the S21 orchestration module/tests/docs. S15 model creation, S19 read resolver, and S20 persistence remain independently usable and unchanged.
 
-## Research review gate
-Review S15 Alpha read-model contract, S19 resolver, S20 persistence experiment, report consistency contract, and the no-authority precedents before implementation. Record `BOR-S21-H1/E1` lineage.
+## Research review / lineage
+`REPORT_CONSISTENCY_V1 → BOR-S15 → BOR-S16 → BOR-S19 → BOR-S20 → BOR-S21-H1/E1`.
+S21 remains composition-only: S15 owns canonical projection/integrity, S20 owns verified atomic persistence. The S8 thesis precedent also constrains fixtures: an `INSUFFICIENT_DATA` council may preserve scenarios and uncertainty but cannot be laundered into a directional thesis.
+
+## Test / verification status
+- CI #93 on `374b1049ff1647f3b768da9f5715a8c4424ee42f`: **FAIL**, 81/84 tests passed.
+- Failure was isolated to all three new S21 tests before the S21 boundary executed: the fixture paired an `INSUFFICIENT_DATA` council with non-empty `thesis: 'bounded thesis'`, correctly rejected by the existing thesis safety invariant.
+- Production S21 orchestration was not implicated; no integrity or authority bypass was observed.
+- Fix commit `8353ae55070a64c421190948ed980714e64130a9` keeps the council uncertainty explicit and sets the fixture thesis to empty rather than weakening the invariant.
+- CI #94 for the fix is in progress. `BOR-S21-E1` remains **PENDING** until green CI and artifact verification.
 
 ## Exact next gate
-Research review → implement composition-only orchestration → deterministic CI → verify artifact/citation/scenario/uncertainty fingerprints and authority=false → ADOPT/REJECT → docs-inclusive CI → merge if green.
+CI #94 GREEN → verify persisted artifact equals canonical model; citations, three scenarios, unresolved disagreement, data gaps and fingerprint are preserved; all authority flags remain false → record `BOR-S21-E1` ADOPT/REJECT → docs-inclusive final CI → merge only if green.
 
 ## Blocker truth
 Independent Railway runtime/storage provisioning remains external. Do not borrow BOT/paper/web infrastructure.
 
 ## Cycle exit target
-- Phase: **PLAN → RESEARCH REVIEW**
-- Research: `BOR-S21-H1/E1`
-- Single next priority: **verified canonical model generation-to-persistence handoff**
+- Phase: **TEST → VERIFY**
+- Research: `BOR-S21-H1/E1 = PENDING`
+- Single next priority: **close CI #94 and verify the S21 generation-to-persistence handoff without weakening uncertainty safeguards**
