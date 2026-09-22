@@ -1,5 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 
+import { getAlphaReadApiResponse } from './alphaReadApi.js';
+import type { AlphaReadModel } from './alphaReadModel.js';
 import {
   BOR_PRODUCT,
   BOR_RUNTIME_VERSION,
@@ -11,6 +13,8 @@ export interface BorHttpResponse {
   statusCode: number;
   body: Record<string, unknown>;
 }
+
+export type AlphaReadModelResolver = () => Readonly<AlphaReadModel> | undefined;
 
 function json(res: ServerResponse, response: BorHttpResponse): void {
   res.statusCode = response.statusCode;
@@ -24,7 +28,16 @@ export function getBorHttpResponse(
   method: string,
   env: NodeJS.ProcessEnv = process.env,
   now: Date = new Date(),
+  resolveAlphaReadModel?: AlphaReadModelResolver,
 ): BorHttpResponse {
+  if (pathname === '/api/alpha/report') {
+    const response = getAlphaReadApiResponse(
+      method,
+      method === 'GET' ? resolveAlphaReadModel?.() : undefined,
+    );
+    return { statusCode: response.statusCode, body: response.body as Record<string, unknown> };
+  }
+
   if (method !== 'GET') {
     return {
       statusCode: 405,
@@ -72,7 +85,10 @@ export function getBorHttpResponse(
   };
 }
 
-export function createBorHttpServer(env: NodeJS.ProcessEnv = process.env) {
+export function createBorHttpServer(
+  env: NodeJS.ProcessEnv = process.env,
+  resolveAlphaReadModel?: AlphaReadModelResolver,
+) {
   return createServer((req: IncomingMessage, res: ServerResponse) => {
     const method = req.method ?? 'GET';
     let pathname = '/';
@@ -92,7 +108,7 @@ export function createBorHttpServer(env: NodeJS.ProcessEnv = process.env) {
       return;
     }
 
-    json(res, getBorHttpResponse(pathname, method, env));
+    json(res, getBorHttpResponse(pathname, method, env, new Date(), resolveAlphaReadModel));
   });
 }
 
