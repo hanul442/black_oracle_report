@@ -3,52 +3,52 @@
 Date: **2026-09-23**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S23 MERGED / S24 ADOPTED — FINAL MERGE GATE**
+Status: **S24 MERGED / S25 ADOPTED — FINAL MERGE GATE**
 
 ## Completed baseline
-- BOR-S0 through BOR-S23 complete.
-- S23 verified read-only archive catalog merged as PR #31 / `0d0ac230abe7cd4ee59fa76341407905b474a819`.
+- BOR-S0 through BOR-S24 complete.
+- S24 deterministic verified HTML renderer merged as PR #32 / `2099603de86f50a367226a6a7229f76b149ea248`.
 - Foundation runtime boundary remains independent from BOT.
 
-## BOR-S24 objective
-Add a deterministic, self-contained HTML renderer for canonical `bor.report-export.v1` artifacts so Alpha reports have a verifiable presentation artifact before later PDF byte rendering.
+## BOR-S25 objective
+Add a deterministic, fail-closed PDF export preparation contract over canonical `bor.report-export.v1` PDF artifacts. Alpha must be able to produce a renderer-neutral, citation-complete PDF render manifest before any external PDF engine is introduced.
 
 ## Acceptance criteria
-- renderer accepts only `format=HTML` canonical export artifacts
-- export fingerprint is recomputed and verified before rendering
-- rendered HTML preserves report/export identity, thesis, Bull/Base/Bear scenarios, citations, unresolved disagreements and data gaps
-- all untrusted report text is HTML-escaped
-- output is deterministic and has a content SHA-256 fingerprint
-- renderer has no network/provider calls and no external publication or trading authority
-- tampered export, PDF input, malformed/empty identity and authority escalation fail closed
-- deterministic tests cover positive preservation and negative safety cases
+- accepts only canonical `format=PDF` S12 export artifacts
+- recomputes and verifies the S12 export fingerprint before manifest construction
+- preserves report/export identity, thesis, Bull/Base/Bear scenarios, citations, contradicting evidence, unresolved disagreements and data gaps
+- produces deterministic renderer-neutral manifest bytes plus SHA-256 content fingerprint
+- manifest contains no remote assets, scripts, URLs, provider/browser/network instructions or publication side effects
+- execution/publication authority remains false and BOT/trading state is unreachable
+- HTML input, tampered export, malformed/empty identity and authority escalation fail closed
+- deterministic tests cover preservation, repeatability and negative safety cases
 
 ## Product / safety boundary
-BOR-owned internal research/report rendering only. S24 transforms an already-canonical S12 export into inert HTML bytes. It cannot publish externally, trade, mutate archives/BOT state, infer missing evidence, fetch remote content, grant authority, or hold broker credentials.
+BOR-owned internal research/report export preparation only. S25 converts an already-canonical S12 PDF export into an inert local render manifest. It does not invoke Chromium, wkhtmltopdf, a provider, browser or network; does not publish; does not mutate report/archive/BOT state; cannot trade; cannot hold broker credentials; and cannot infer missing evidence.
 
 ## Rollback
-If final CI or mergeability regresses, do not merge PR #32. Revert only S24 renderer/tests/research/control changes. S0–S23 contracts and archive history remain untouched.
+If final CI or mergeability regresses, do not merge PR #33. Revert only S25 manifest/tests/research/control changes. S0–S24 contracts and archive history remain untouched.
 
 ## Research review / lineage
-Lineage: `BOR-S11-E1 → BOR-S12-E1 → REPORT_CONSISTENCY_V1 → BOR-S15/16 → BOR-S22/23 → BOR-S24-H1/E1`.
-Primary precedent: `docs/research/2026-09-21-s12-export-integrity-review.md` — S12 adopted `bor.report-export.v1` as canonical input to later HTML/PDF rendering while preserving citations, uncertainty, identity and zero authority.
-S24 record: `docs/research/2026-09-23-s24-html-renderer-review.md`.
+Lineage: `BOR-S11-E1 → BOR-S12-E1 → REPORT_CONSISTENCY_V1 → BOR-S15/16 → BOR-S22/23 → BOR-S24-E1 → BOR-S25-H1/E1`.
+Primary precedents: `docs/research/2026-09-21-s12-export-integrity-review.md` and `docs/research/2026-09-23-s24-html-renderer-review.md`.
+S25 record: `docs/research/2026-09-23-s25-pdf-manifest-review.md`.
 
 ## Verification result
-- implementation head `8a5d57253d84ecc9acbbb381f0fed7128bf5394c` passed BLACK ORACLE REPORT CI #114
-- deterministic bytes/content fingerprint, escaping, Bull/Base/Bear, citation and contradicting-evidence IDs, unresolved disagreements/data gaps, and zero-authority behavior verified against implementation/tests
-- tampered fingerprint, PDF input, authority escalation and empty identity fail closed
-- `BOR-S24-E1 = ADOPT` within repository/local-artifact scope
+- implementation head `111c13b7254e3014785f3e506dd2bc6adcee414c` passed BLACK ORACLE REPORT CI #119
+- direct implementation/test review verified export-fingerprint recomputation, deterministic manifest bytes/content fingerprint, canonical identity/thesis/Bull-Base-Bear/citation/contradicting-evidence/disagreement/data-gap preservation, and zero-authority behavior
+- tampered fingerprint, HTML input, authority escalation and empty identity fail closed
+- `BOR-S25-E1 = ADOPT` within repository/local-artifact scope
 
 ## Blocker truth
 - independent Railway project creation remains blocked by workspace resource limits
 - BOR-owned durable production artifact storage is not yet established
-- S24 does not claim production deployment, public publication or PDF byte rendering
+- S25 does not claim production deployment, public publication or final PDF byte rendering
 
 ## Exact next gate
-Fresh docs-inclusive CI on the adoption/control head → re-check PR #32 mergeability → squash merge only if green. No deployment claim while Railway/durable-storage blockers remain.
+Fresh docs-inclusive CI on the adoption/control head → re-check PR #33 mergeability → squash merge only if green. No deployment claim while Railway/durable-storage blockers remain.
 
 ## Cycle exit target
 - Phase: **VERIFY → DOCUMENT → FINAL CI/MERGE GATE**
-- Research: `BOR-S24-E1 = ADOPT`
-- Single next priority: **green docs-inclusive CI and safe merge of PR #32**
+- Research: `BOR-S25-E1 = ADOPT`
+- Single next priority: **green docs-inclusive CI and safe merge of PR #33**
