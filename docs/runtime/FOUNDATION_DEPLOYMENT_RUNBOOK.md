@@ -3,6 +3,8 @@
 Status: Foundation closure deployment contract
 Repository: `hanul442/black_oracle_report`
 
+Current provisioning status (2026-09-22): **BLOCKED**. Creation of the required independent Railway project was rejected because the workspace free-plan resource provision limit was exceeded. Do not place BOR inside the BOT project merely to bypass this isolation gate.
+
 ## Boundary
 
 BOR deploys as an independent Railway project and service sourced only from this repository. It must not receive BOT Supabase credentials, broker/exchange credentials, PAPER runtime variables, scheduler tokens, or trading authority.

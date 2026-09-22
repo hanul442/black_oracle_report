@@ -46,7 +46,7 @@ S21 remains composition-only: S15 owns canonical projection/integrity, S20 owns 
 - recorded the independent deployment, artifact, smoke-test, and rollback boundary in `docs/runtime/FOUNDATION_DEPLOYMENT_RUNBOOK.md`
 
 ## Blocker truth
-- independent Railway runtime provisioning is active work
+- independent Railway project creation was attempted and blocked by the connected workspace's free-plan resource provision limit; an upgrade or an explicitly approved equivalent isolated resource is required
 - BOR-owned durable artifact storage is not yet established
 - an unmounted Railway filesystem is not canonical persistence
 - do not borrow BOT/PAPER storage, credentials, scheduler, or mutation authority
@@ -54,6 +54,6 @@ S21 remains composition-only: S15 owns canonical projection/integrity, S20 owns 
 ## Cycle exit target
 - Phase: **VERIFY → PR / CI → RUNTIME ATTESTATION**
 - Repository pipeline: exact-head build/test must remain green
-- Runtime: independent service, exact deployed SHA, `/health` and `/version` smoke pass
+- Runtime: **BLOCKED** pending independent resource capacity; exact deployed SHA, `/health`, and `/version` remain unverified in Railway
 - Artifact path: deterministic local handoff pass; durable production persistence remains explicit until provisioned
 - Single next priority: **attest the isolated BOR Railway deployment and preserve the storage blocker truth**
