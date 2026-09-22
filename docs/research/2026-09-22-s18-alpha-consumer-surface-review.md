@@ -1,8 +1,9 @@
 # BOR-S18 Research Review — Alpha Consumer Surface
 
 Date: 2026-09-22
-Status: IMPLEMENTED / CI PENDING
+Status: VERIFIED / ADOPT
 Hypothesis: BOR-S18-H1
+Experiment: BOR-S18-E1
 
 ## Question
 Can BOR expose a useful human-facing Alpha report surface without introducing a second research projection, client-side truth reconstruction, write authority, publication authority, trading authority, or BOT dependency?
@@ -40,10 +41,19 @@ Success criteria:
 8. full repository CI passes
 
 ## Result
-PENDING exact-head CI and final verification.
+BLACK ORACLE REPORT CI run #35682449786 passed on exact implementation/docs head `5bff818e322af8cbaca92e8d8a3aeedaa17291ba`.
+
+Verified behavior:
+- valid canonical model renders through the same S16 gate used by the JSON API
+- 404 unavailable, 409 integrity failure, and 405 unsupported-method states remain fail closed
+- unsupported methods do not invoke the Alpha model resolver
+- dynamic report and scenario markup is escaped before insertion
+- Evidence IDs, unresolved disagreements, data gaps, and explicit no-authority state remain visible
+- existing API, health, and version contracts remain covered by the repository test suite
+- no database, provider, deployment, trading, publication, broker, or BOT authority changed
 
 ## Adopt / Reject
-PENDING. Do not mark ADOPT until exact-head BLACK ORACLE REPORT CI is green and the PR remains mergeable.
+**ADOPT.** BOR-S18-E1 supports the hypothesis for frozen Alpha: a minimal server-rendered consumer surface improves human inspectability without creating a second research truth or weakening fail-closed boundaries.
 
 ## Authority impact
 None. S18 grants no execution, broker, capital, publication, persistent-write, or BOT authority.
