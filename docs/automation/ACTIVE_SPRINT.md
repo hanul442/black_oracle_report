@@ -1,59 +1,57 @@
-# ACTIVE SPRINT — BOR Alpha Runtime Integration
+# ACTIVE SPRINT — BOR Alpha v0.1
 
 Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S21 MERGED / FOUNDATION RUNTIME CLOSURE ACTIVE**
+Status: **S21 + FOUNDATION MERGED / S22 ADOPTED — FINAL MERGE GATE**
 
 ## Completed baseline
-- BOR-S0 through BOR-S20 complete.
-- S20 atomic verified artifact persistence merged as PR #26 / `97b7c4e1b98abd182660ca386c9f76f307529ba8`.
-- S21 verified Alpha model publish cycle merged on `main` at `9118fe77780b26fe1901dc76bcf0add8231d29e0`.
+- BOR-S0 through BOR-S21 complete.
+- S21 verified Alpha model publish cycle merged as PR #27 / `9118fe77780b26fe1901dc76bcf0add8231d29e0`.
+- Foundation runtime build boundary merged as PR #29 / `51c88b786a2b31ee968f5c9124123cf828f7059a`; it adds publish-to-read verification, lockfile, and isolated deployment runbook while preserving the independent-runtime blocker truth.
 
-## Foundation objective
-Deploy the existing BOR-owned runtime independently, attest its exact source revision, and prove the artifact generation -> verification -> persistence -> resolver -> read path without borrowing BOT execution or database mutation authority.
+## BOR-S22 objective
+Recover the already-researched S22 immutable/versioned archive on top of foundation `main`, without overwriting foundation control-plane changes, and preserve reproducible report history for already-verified canonical Alpha read models.
 
 ## Acceptance criteria
-- compose existing S15 `createAlphaReadModel` with S20 persistence; do not duplicate either contract
-- require explicit projection id and artifact path
-- parent report/export consistency and no-authority checks remain fail-closed through S15/S16
-- persistence remains atomic through S20
-- return only model + persistence receipt needed for verification
-- deterministic tests cover valid handoff plus parent inconsistency / authority escalation / invalid path rejection
-- no network/provider calls and no BOT dependency
+- accept only an already-verified canonical Alpha read model
+- derive archive identity deterministically from projection/report/version/model fingerprint; reject unsafe/path-traversal identifiers
+- write each version atomically and never silently overwrite an existing different artifact
+- exact replay of the same model/version is idempotent
+- archived JSON deep-equals the verified canonical model; citations, Bull/Base/Bear scenarios, disagreement/data gaps and authority=false remain unchanged
+- foundation lockfile/runbook/runtime verification from PR #29 remain intact
+- no network/provider calls, broker credentials, BOT state/database/runtime dependency, Risk bypass, execution or publication authority
 
 ## Product / safety boundary
-Internal BOR artifact generation only. No broker credentials, orders, BOT state/database/runtime dependency, Risk bypass, public report publication, execution authority, or publication authority. Missing/contradictory evidence remains represented by the canonical report/model rather than repaired here.
+BOR-owned internal research/report archive only. No external publication or trading. S22 does not infer, repair or suppress missing/contradictory evidence and does not mutate canonical report/model content. It only versions verified artifacts. Do not borrow BOT/PAPER storage, credentials, scheduler, runtime or mutation authority.
 
 ## Rollback
-Delete the S21 orchestration module/tests/docs. S15 model creation, S19 read resolver, and S20 persistence remain independently usable and unchanged.
+If the final docs-inclusive gate regresses, do not merge PR #30; revert only the S22 archive module/tests/research/control-document changes. Foundation PR #29 and S15/S19/S20/S21 contracts remain untouched. Existing archive artifacts, when production storage exists, are append-only and are not destructively deleted by rollback.
 
 ## Research review / lineage
-`REPORT_CONSISTENCY_V1 → BOR-S15 → BOR-S16 → BOR-S19 → BOR-S20 → BOR-S21-H1/E1`.
-S21 remains composition-only: S15 owns canonical projection/integrity, S20 owns verified atomic persistence. The S8 thesis precedent constrains fixtures: an `INSUFFICIENT_DATA` council may preserve scenarios and uncertainty but cannot be laundered into a directional thesis.
+`REPORT_CONSISTENCY_V1 → BOR-S15 → BOR-S16 → BOR-S19 → BOR-S20 → BOR-S21 → BOR-S22-H1/E1`.
+S22-H1: a content-addressed append-only BOR archive can preserve reproducible report history without weakening canonical integrity or introducing publication/trading authority.
+Original S22 implementation head `6f8915f82931e89e907a7d558663cffc6601be11` passed CI #99 and adoption-record head `ea5d7db389e26324c0dec9f255b687b3578a9008` passed CI #101. PR #28 became non-mergeable after foundation PR #29 advanced `main`, so recovery PR #30 reapplied S22 on current `main`. Recovery implementation head `2e6d4443f863c4b6279cf6ae98fb295d2a28f574` passed BLACK ORACLE REPORT CI #105.
 
-## Test / verification status
-- CI #93 on `374b1049ff1647f3b768da9f5715a8c4424ee42f`: **FAIL**, 81/84 tests passed because the new fixture violated the existing `INSUFFICIENT_DATA` thesis invariant before S21 executed.
-- Fix `8353ae55070a64c421190948ed980714e64130a9` preserved the invariant and made the fixture thesis explicitly empty.
-- Final implementation/docs head before adoption record `1d77e18c2ee7af7f0647bf1a74ff54c5b243dbf2`: **CI #95 SUCCESS**.
-- Verified deterministic coverage: persisted artifact deep-equals canonical model; citation IDs preserved; Bull/Base/Bear count = 3; unresolved disagreement and data gaps preserved; persistence/model fingerprints agree; execution/publication/BOT authority flags all false.
-- Tampered parent and authority escalation reject before persistence; invalid artifact target fails closed.
-- Research decision: **`BOR-S21-E1 = ADOPT`**.
-
-## Foundation changes
-- committed the lockfile required by the existing Railway `npm ci` build command
-- extended the S21 test through file resolution and the integrity-gated read API
-- recorded the independent deployment, artifact, smoke-test, and rollback boundary in `docs/runtime/FOUNDATION_DEPLOYMENT_RUNBOOK.md`
+## Verification result
+- archived JSON deep-equals the canonical Alpha model
+- citation IDs and Bull/Base/Bear scenarios remain unchanged
+- unresolved disagreements, data gaps and content fingerprint remain unchanged
+- exact replay is idempotent
+- collision/tamper, unsafe identity, missing root and authority escalation fail closed
+- PR #30 changes only S22 archive module/tests/research/control docs, preserving foundation runtime/build/deployment files
+- `BOR-S22-E1 = ADOPT`
 
 ## Blocker truth
-- independent Railway project creation was attempted and blocked by the connected workspace's free-plan resource provision limit; an upgrade or an explicitly approved equivalent isolated resource is required
-- BOR-owned durable artifact storage is not yet established
+- independent Railway project creation remains blocked by the connected workspace free-plan resource provision limit
+- BOR-owned durable production artifact storage is not yet established
 - an unmounted Railway filesystem is not canonical persistence
-- do not borrow BOT/PAPER storage, credentials, scheduler, or mutation authority
+- S22 repository work does not claim production durability
+
+## Exact next gate
+Run fresh docs-inclusive CI on the adoption-record head → re-check PR #30 mergeability and blocker truth → squash merge only if green. No deployment is claimed while independent runtime/storage provisioning remains blocked.
 
 ## Cycle exit target
-- Phase: **VERIFY → PR / CI → RUNTIME ATTESTATION**
-- Repository pipeline: exact-head build/test must remain green
-- Runtime: **BLOCKED** pending independent resource capacity; exact deployed SHA, `/health`, and `/version` remain unverified in Railway
-- Artifact path: deterministic local handoff pass; durable production persistence remains explicit until provisioned
-- Single next priority: **attest the isolated BOR Railway deployment and preserve the storage blocker truth**
+- Phase: **VERIFY → DOCUMENT → PR/MERGE**
+- Research: `BOR-S22-E1 = ADOPT`
+- Single next priority: **final docs-inclusive CI and safe PR #30 merge**
