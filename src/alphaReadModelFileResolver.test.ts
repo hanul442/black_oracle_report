@@ -86,3 +86,36 @@ test('tampered or malformed configured artifact remains fail-closed', () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('authority-escalated configured artifact remains an explicit integrity failure', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'bor-s19-'));
+  try {
+    const path = join(dir, 'alpha.json');
+    const canonical = model();
+    writeFileSync(path, JSON.stringify({ ...canonical, executionAuthority: true }), 'utf8');
+    const resolver = createAlphaReadModelFileResolver({ BOR_ALPHA_READ_MODEL_PATH: path });
+    assert.equal(getAlphaReadApiResponse('GET', resolver()).statusCode, 409);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('resolver re-reads configured artifact without restart and never retains a stale valid copy', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'bor-s19-'));
+  try {
+    const path = join(dir, 'alpha.json');
+    const canonical = model();
+    const resolver = createAlphaReadModelFileResolver({ BOR_ALPHA_READ_MODEL_PATH: path });
+
+    writeFileSync(path, JSON.stringify(canonical), 'utf8');
+    assert.equal(getAlphaReadApiResponse('GET', resolver()).statusCode, 200);
+
+    writeFileSync(path, JSON.stringify({ ...canonical, title: 'changed without fingerprint update' }), 'utf8');
+    assert.equal(getAlphaReadApiResponse('GET', resolver()).statusCode, 409);
+
+    writeFileSync(path, JSON.stringify(canonical), 'utf8');
+    assert.equal(getAlphaReadApiResponse('GET', resolver()).statusCode, 200);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
