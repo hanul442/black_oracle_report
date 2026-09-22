@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 
 import { getAlphaReadApiResponse } from './alphaReadApi.js';
+import { renderAlphaReportPage } from './alphaReportPage.js';
 import type { AlphaReadModel } from './alphaReadModel.js';
 import {
   BOR_PRODUCT,
@@ -12,15 +13,17 @@ import {
 export interface BorHttpResponse {
   statusCode: number;
   body: Record<string, unknown>;
+  contentType?: string;
+  rawBody?: string;
 }
 
 export type AlphaReadModelResolver = () => Readonly<AlphaReadModel> | undefined;
 
-function json(res: ServerResponse, response: BorHttpResponse): void {
+function send(res: ServerResponse, response: BorHttpResponse): void {
   res.statusCode = response.statusCode;
-  res.setHeader('content-type', 'application/json; charset=utf-8');
+  res.setHeader('content-type', response.contentType ?? 'application/json; charset=utf-8');
   res.setHeader('cache-control', 'no-store');
-  res.end(JSON.stringify(response.body));
+  res.end(response.rawBody ?? JSON.stringify(response.body));
 }
 
 export function getBorHttpResponse(
@@ -30,6 +33,20 @@ export function getBorHttpResponse(
   now: Date = new Date(),
   resolveAlphaReadModel?: AlphaReadModelResolver,
 ): BorHttpResponse {
+  if (pathname === '/alpha/report') {
+    const apiResponse = getAlphaReadApiResponse(
+      method,
+      method === 'GET' ? resolveAlphaReadModel?.() : undefined,
+    );
+    const page = renderAlphaReportPage(apiResponse);
+    return {
+      statusCode: page.statusCode,
+      body: apiResponse.body as Record<string, unknown>,
+      contentType: page.contentType,
+      rawBody: page.body,
+    };
+  }
+
   if (pathname === '/api/alpha/report') {
     const response = getAlphaReadApiResponse(
       method,
@@ -96,7 +113,7 @@ export function createBorHttpServer(
     try {
       pathname = new URL(req.url ?? '/', 'http://bor.local').pathname;
     } catch {
-      json(res, {
+      send(res, {
         statusCode: 400,
         body: {
           ok: false,
@@ -108,7 +125,7 @@ export function createBorHttpServer(
       return;
     }
 
-    json(res, getBorHttpResponse(pathname, method, env, new Date(), resolveAlphaReadModel));
+    send(res, getBorHttpResponse(pathname, method, env, new Date(), resolveAlphaReadModel));
   });
 }
 

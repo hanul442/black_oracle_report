@@ -1,61 +1,57 @@
-# ACTIVE SPRINT — BOR Alpha HTTP Route Integration
+# ACTIVE SPRINT — BOR Alpha Consumer Surface
 
 Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S17 VERIFIED / ADOPT — FINAL CI + MERGE GATE**
+Status: **S18 VERIFIED / ADOPT — FINAL CI + MERGE GATE**
 
 ## Completed
-- BOR-S0–S16 are merged to `main`.
-- `main` commit `035cfada8b57bbeb0c5db54c22cefec288dfb868` passed BLACK ORACLE REPORT CI #73.
-- S15 provides canonical integrity-gated `bor.alpha-read-model.v1`; S16 provides GET-only `bor.alpha-read-api.v1` serialization.
-- S17 research review recorded DI-001/003/004, AIML-005/006 and BOR-S8-E1..BOR-S16-E1 constraints.
-- PR #22 implementation head `bb8558a8e5bd6168b64a374e652cc54ae5dd958f` passed BLACK ORACLE REPORT CI #75 and is mergeable.
-- BOR-S17-E1 is **ADOPT** after CI and manual contract verification.
+- BOR-S0–S17 are merged to `main`.
+- BOR-S17 PR #22 passed final docs-inclusive BLACK ORACLE REPORT CI #77 and squash-merged as `95a3f5c667e968e8935d4a9865835869875d802f`.
+- S15 provides canonical integrity-gated `bor.alpha-read-model.v1`.
+- S16 provides GET-only `bor.alpha-read-api.v1`.
+- S17 exposes the canonical model at `GET /api/alpha/report` through a dependency-injected read-only resolver.
+- S18 implementation adds a framework-free `GET /alpha/report` HTML surface over the same S16 integrity gate.
+- exact implementation/docs head `5bff818e322af8cbaca92e8d8a3aeedaa17291ba` passed BLACK ORACLE REPORT CI run #35682449786.
+- BOR-S18-E1 is **ADOPT** after integrity, fail-closed, escaping, no-authority, and regression verification.
 
-## Active — BOR-S17 runtime HTTP route integration
+## Active — BOR-S18 Alpha report consumer surface
 
 ### Objective
-Wire the verified S16 Alpha Read API into BOR's independent HTTP runtime as a narrow read-only route, without creating a second research projection, persistence path, publication authority, trading authority, or BOT dependency.
+Create the smallest real user-facing Alpha report surface over the verified S15–S17 chain, so a human can inspect the canonical report without introducing a second research projection, client-side reconstruction, write path, or new framework dependency.
 
-### Acceptance criteria
-- runtime exposes exactly one frozen-Alpha research route: `GET /api/alpha/report`
-- route delegates response construction to `getAlphaReadApiResponse`; runtime does not reconstruct, repair, filter, or synthesize research state
-- Alpha model access is dependency-injected/read-only so the HTTP layer does not acquire database or provider write authority
-- absent model remains explicit `404 ALPHA_READ_MODEL_UNAVAILABLE`
-- tampered/authority-escalated model remains fail-closed `409 ALPHA_READ_MODEL_INTEGRITY_FAILURE`
-- non-GET request remains `405 METHOD_NOT_ALLOWED` without invoking the resolver
-- health/version behavior remains unchanged
-- deterministic tests cover valid route, unavailable model, tampered model, unsupported method, and unrelated route isolation
-- no broker credentials, orders, BOT portfolio mutation, Risk bypass, public publishing, or BOT runtime dependency
+### Delivered
+- read-only `GET /alpha/report`
+- same canonical resolver + S16 integrity gate as `GET /api/alpha/report`
+- report identity/version/asOf, summary, thesis, scenarios, Evidence, contradicting Evidence, catalysts, risks, invalidation conditions, disagreements, and data gaps rendered
+- explicit execution/publication/BOT authority=false display
+- mobile-first framework-free HTML with no client JavaScript
+- dynamic field escaping
+- explicit 404/409/405 fail-closed states
+- deterministic renderer/runtime regression tests
 
 ### Product / safety boundary
-Presentation transport only. S17 may retrieve a pre-built canonical S15 model through an injected read-only resolver and pass it to S16. It may never create Evidence, alter citations/scenarios/uncertainty, write database state, call brokers/exchanges, submit orders, mutate BOT state, bypass Risk, publish reports publicly, or require BOT to operate.
-
-### Rollback
-Repository-only revert of PR #22. S0–S16 canonical artifacts, API contract, runtime health/version endpoints, database schema, and deployment configuration remain unchanged.
-
-### Research review / constraints
-DI-001/003/004, AIML-005/006, BOR-S8-E1 through BOR-S16-E1 constrain S17. BOR-S17-H1 is supported by BOR-S17-E1; **BOR-S17-E1 = ADOPT**. Research → Hypothesis → Experiment → Result → Adopt/Reject lineage is preserved in `docs/research/2026-09-22-s17-alpha-http-route-review.md`.
+Read-only presentation only. S15/S16 remain authoritative. S18 creates no Evidence, does not alter scenarios or uncertainty, writes no persistent state, performs no provider call, publishes nothing externally, and grants no execution/BOT authority.
 
 ### Verification record
-- CI #75: SUCCESS on implementation head `bb8558a8e5bd6168b64a374e652cc54ae5dd958f`.
-- Runtime delegates the complete S16 body; no field-level Evidence/citation/scenario/uncertainty transformation exists in S17.
-- Resolver executes only for GET `/api/alpha/report`; unsupported methods do not read model state.
-- Missing/tampered states remain explicit S16 fail-closed responses.
-- `/health` and `/version` remain isolated; no persistence/provider/deployment/trading/publication/BOT contract changed.
+- PR #23 exact pre-final-doc head: `5bff818e322af8cbaca92e8d8a3aeedaa17291ba`
+- BLACK ORACLE REPORT CI #35682449786 — **SUCCESS**
+- PR mergeable after initial CI: **true**
+- BOR-S18-E1 — **ADOPT**
+- Railway/database mutation: none
+
+### Rollback
+Repository-only revert/close of PR #23. S0–S17 API/runtime/database/deployment contracts remain unchanged.
 
 ### Exact next gate
-Run docs-inclusive final CI on the post-verification PR #22 head → require green and mergeable → squash merge PR #22. Do not merge if final CI fails or head moves without re-verification.
+Require a fresh docs-inclusive CI on the final PR #23 head after this verification record. If green and PR remains mergeable, squash merge. Do not deploy while independent Railway capacity remains blocked.
 
 ## Current blockers
-- **CONFIRMED external:** Railway free-plan resource provision limit blocks independent BOR runtime/database provisioning.
-- Existing Railway `Black Oracle` services are legacy BOT/paper/web infrastructure and forbidden for BOR reuse.
-- PR #16 is documentation-only Global Intelligence research outside frozen Alpha implementation.
-- Repository-only S17 work is unblocked.
+- **External only:** Railway free-plan resource provision limit blocks independent BOR runtime/database provisioning.
+- Existing BOT/paper/web Railway services remain forbidden for BOR reuse.
 
 ## Cycle exit record
 - Phase: **VERIFY / DOCUMENT COMPLETE → FINAL CI / MERGE GATE**
-- PR: #22 (`bor-s17-alpha-http-route` → `main`).
-- Research result: **BOR-S17-E1 ADOPT**.
-- Single next priority: docs-inclusive final CI on PR #22; if green and mergeable, squash merge.
+- PR: #23 (`bor-s18-alpha-report-surface` → `main`)
+- Research result: **BOR-S18-E1 ADOPT**
+- Single next priority: final docs-inclusive CI; merge only if green and mergeable.
