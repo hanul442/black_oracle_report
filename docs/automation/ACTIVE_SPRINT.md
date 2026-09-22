@@ -3,14 +3,15 @@
 Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S20 COMPLETE / S21 ADOPTED — FINAL CI GATE**
+Status: **S21 MERGED / FOUNDATION RUNTIME CLOSURE ACTIVE**
 
 ## Completed baseline
 - BOR-S0 through BOR-S20 complete.
 - S20 atomic verified artifact persistence merged as PR #26 / `97b7c4e1b98abd182660ca386c9f76f307529ba8`.
+- S21 verified Alpha model publish cycle merged on `main` at `9118fe77780b26fe1901dc76bcf0add8231d29e0`.
 
-## BOR-S21 objective
-Add the smallest BOR-owned orchestration boundary that creates an Alpha read model only from already-versioned report/export/consistency parents and persists it through the S20 atomic writer. This is an internal artifact handoff, not public publication.
+## Foundation objective
+Deploy the existing BOR-owned runtime independently, attest its exact source revision, and prove the artifact generation -> verification -> persistence -> resolver -> read path without borrowing BOT execution or database mutation authority.
 
 ## Acceptance criteria
 - compose existing S15 `createAlphaReadModel` with S20 persistence; do not duplicate either contract
@@ -39,13 +40,20 @@ S21 remains composition-only: S15 owns canonical projection/integrity, S20 owns 
 - Tampered parent and authority escalation reject before persistence; invalid artifact target fails closed.
 - Research decision: **`BOR-S21-E1 = ADOPT`**.
 
-## Exact next gate
-Run docs-inclusive CI on the adoption-record head → require GREEN and PR #27 mergeable → squash merge. If either fails, do not merge; diagnose without weakening integrity/uncertainty/authority boundaries.
+## Foundation changes
+- committed the lockfile required by the existing Railway `npm ci` build command
+- extended the S21 test through file resolution and the integrity-gated read API
+- recorded the independent deployment, artifact, smoke-test, and rollback boundary in `docs/runtime/FOUNDATION_DEPLOYMENT_RUNBOOK.md`
 
 ## Blocker truth
-Independent Railway runtime/storage provisioning remains external. Do not borrow BOT/paper/web infrastructure.
+- independent Railway runtime provisioning is active work
+- BOR-owned durable artifact storage is not yet established
+- an unmounted Railway filesystem is not canonical persistence
+- do not borrow BOT/PAPER storage, credentials, scheduler, or mutation authority
 
 ## Cycle exit target
-- Phase: **DOCUMENT → FINAL CI / MERGE**
-- Research: `BOR-S21-H1/E1 = ADOPT`
-- Single next priority: **close final docs-inclusive CI and merge PR #27 only if green**
+- Phase: **VERIFY → PR / CI → RUNTIME ATTESTATION**
+- Repository pipeline: exact-head build/test must remain green
+- Runtime: independent service, exact deployed SHA, `/health` and `/version` smoke pass
+- Artifact path: deterministic local handoff pass; durable production persistence remains explicit until provisioned
+- Single next priority: **attest the isolated BOR Railway deployment and preserve the storage blocker truth**

@@ -10,6 +10,8 @@ import { createThesisScenarioArtifact } from './thesisScenario.js';
 import { createReportArtifact, type ReportArtifact } from './reportArtifact.js';
 import { createReportExport } from './reportExport.js';
 import { verifyReportExportConsistency } from './reportConsistency.js';
+import { getAlphaReadApiResponse } from './alphaReadApi.js';
+import { createAlphaReadModelFileResolver } from './alphaReadModelFileResolver.js';
 import { publishAlphaReadModelArtifact } from './alphaReadModelPublishCycle.js';
 
 const now = new Date('2026-09-22T05:00:00Z');
@@ -36,6 +38,9 @@ test('publishes exact canonical projection through verified atomic persistence',
   const dir=mkdtempSync(join(tmpdir(),'bor-s21-'));
   try { const path=join(dir,'alpha.json'); const {report,exported,consistency}=parents(); const out=publishAlphaReadModelArtifact(report,exported,consistency,{projectionId:'p1'},path); const disk=JSON.parse(readFileSync(path,'utf8'));
     assert.deepEqual(disk,out.model); assert.deepEqual(out.model.citationEvidenceIds,['e1']); assert.equal(out.model.scenarios.length,3); assert.deepEqual(out.model.unresolvedDisagreements,['insufficient counterevidence']); assert.deepEqual(out.model.dataGaps,['GAP0','GAP1']); assert.equal(out.persistence.contentFingerprint,out.model.contentFingerprint); assert.equal(out.executionAuthority,false); assert.equal(out.reportPublicationAuthority,false); assert.equal(out.botDependency,false);
+    const resolved=createAlphaReadModelFileResolver({BOR_ALPHA_READ_MODEL_PATH:path})();
+    const response=getAlphaReadApiResponse('GET',resolved);
+    assert.equal(response.statusCode,200); assert.equal(response.body.ok,true); assert.deepEqual(response.body.model,out.model);
   } finally { rmSync(dir,{recursive:true,force:true}); }
 });
 
