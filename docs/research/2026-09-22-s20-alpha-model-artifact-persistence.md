@@ -1,7 +1,7 @@
 # BOR-S20 Research Review — Canonical Alpha Model Artifact Persistence
 
 Date: 2026-09-22
-Status: IMPLEMENTED / CI PENDING
+Status: VERIFIED / ADOPT
 Hypothesis: BOR-S20-H1
 Experiment: BOR-S20-E1
 
@@ -22,18 +22,18 @@ A same-filesystem atomic replace sink that accepts only S16-valid Alpha read mod
 - expose a configured helper using the same BOR_ALPHA_READ_MODEL_PATH consumed by S19
 - no provider calls, BOT dependency, public publication, or trading authority
 
-## Success criteria
-1. valid model persists and S19 resolver returns 200 for the exact model
-2. tampered/authority-escalated model is rejected before target creation
-3. replacement makes the next resolver read see only the new verified model
-4. failed replacement cleans temp artifacts and preserves prior target state
-5. full BLACK ORACLE REPORT CI passes
+## Verification result
+Exact implementation/docs head e7adf19218b887bb08c0b4a8957d41804f56cb5d passed BLACK ORACLE REPORT CI run #35684260234.
 
-## Result
-PENDING exact-head CI.
+Verified behavior:
+- valid model persists and is read back through the real S19 resolver/API gate with 200
+- tampered and authority-escalated models are rejected before target creation
+- atomic replacement makes the next resolver read observe only the new verified model
+- failed replacement cleans temporary artifacts and preserves the existing target directory state
+- no provider/network calls, BOT dependency, public publication, execution authority, or Risk bypass
 
 ## Adopt / Reject
-PENDING.
+**ADOPT.** BOR-S20-E1 supports the hypothesis. Atomic persistence is suitable as the BOR-owned handoff between verified model generation and the S19 read-only runtime resolver.
 
 ## Authority impact
 None. Persistence is local/BOR-owned and does not publish externally or trade.
