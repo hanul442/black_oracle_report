@@ -1,7 +1,7 @@
 # BOR-S25 Deterministic PDF Render Manifest Research Review
 
 Date: 2026-09-23
-Status: PENDING
+Status: ADOPTED (repository/local-artifact scope)
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
@@ -30,7 +30,10 @@ Implement `bor.pdf-render-manifest.v1` that:
 Repository/local artifact only. The experiment does not produce final PDF bytes, invoke an external renderer, publish, trade, mutate BOT/archive state, fetch remote content, hold broker credentials or bypass Risk.
 
 ### Result
-PENDING fresh CI and artifact verification.
+- Implementation head `111c13b7254e3014785f3e506dd2bc6adcee414c` passed BLACK ORACLE REPORT CI #119.
+- Direct implementation/test review verified canonical export fingerprint recomputation before manifest construction, PDF-only and zero-authority gates, deterministic JSON bytes + SHA-256 content fingerprint, and preservation of canonical report/export identity, thesis, Bull/Base/Bear scenarios, citation evidence IDs, contradicting-evidence IDs inside scenarios, unresolved disagreements and data gaps.
+- Negative tests fail closed on tampered export fingerprint, HTML input, authority escalation and empty canonical identity.
+- Manifest construction adds no renderer/browser/network/publication/trading/BOT authority and does not mutate canonical report/archive state.
 
 ### Adopt / Reject
-PENDING — do not adopt until CI and direct artifact semantics/fingerprint/no-authority verification pass.
+**ADOPT — BOR-S25-E1.** Evidence supports the hypothesis within repository/local-artifact scope. This adoption does not claim final PDF byte rendering, production deployment, durable production storage or public publication.
