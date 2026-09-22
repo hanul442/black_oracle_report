@@ -62,6 +62,37 @@ test('Alpha route is GET-only and does not resolve state for unsupported methods
   assert.equal(response.statusCode, 405); assert.equal(response.body.error, 'METHOD_NOT_ALLOWED'); assert.equal(reads, 0);
 });
 
+test('HTML Alpha report surface uses the same integrity-gated model and no-authority contract', () => {
+  const canonical = model();
+  const response = getBorHttpResponse('/alpha/report', 'GET', {}, NOW, () => canonical);
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.contentType, 'text/html; charset=utf-8');
+  assert.equal(response.body.model, canonical);
+  assert.match(response.rawBody ?? '', /BLACK ORACLE · REPORT/);
+  assert.match(response.rawBody ?? '', /Evidence citations/);
+  assert.match(response.rawBody ?? '', /disagreement/);
+  assert.match(response.rawBody ?? '', /Data gaps/);
+  assert.match(response.rawBody ?? '', /Execution authority: false/);
+});
+
+test('HTML Alpha report surface is GET-only and fail-closed without resolving unsupported methods', () => {
+  let reads = 0;
+  const methodRejected = getBorHttpResponse('/alpha/report', 'POST', {}, NOW, () => { reads += 1; return model(); });
+  assert.equal(methodRejected.statusCode, 405);
+  assert.equal(reads, 0);
+  assert.match(methodRejected.rawBody ?? '', /METHOD_NOT_ALLOWED/);
+
+  const unavailable = getBorHttpResponse('/alpha/report', 'GET', {}, NOW);
+  assert.equal(unavailable.statusCode, 404);
+  assert.match(unavailable.rawBody ?? '', /ALPHA_READ_MODEL_UNAVAILABLE/);
+
+  const canonical = model();
+  const tampered = { ...canonical, thesis: 'tampered' } as AlphaReadModel;
+  const integrityRejected = getBorHttpResponse('/alpha/report', 'GET', {}, NOW, () => tampered);
+  assert.equal(integrityRejected.statusCode, 409);
+  assert.match(integrityRejected.rawBody ?? '', /ALPHA_READ_MODEL_INTEGRITY_FAILURE/);
+});
+
 test('non-GET and unknown routes remain explicit and isolated', () => {
   assert.equal(getBorHttpResponse('/health', 'POST', {}, NOW).statusCode, 405);
   assert.equal(getBorHttpResponse('/unknown', 'GET', {}, NOW, () => model()).statusCode, 404);
