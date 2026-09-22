@@ -3,14 +3,15 @@
 Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S17 IMPLEMENTED — PR CI / VERIFY GATE**
+Status: **S17 VERIFIED / ADOPT — FINAL CI + MERGE GATE**
 
 ## Completed
 - BOR-S0–S16 are merged to `main`.
 - `main` commit `035cfada8b57bbeb0c5db54c22cefec288dfb868` passed BLACK ORACLE REPORT CI #73.
 - S15 provides canonical integrity-gated `bor.alpha-read-model.v1`; S16 provides GET-only `bor.alpha-read-api.v1` serialization.
 - S17 research review recorded DI-001/003/004, AIML-005/006 and BOR-S8-E1..BOR-S16-E1 constraints.
-- S17 implementation is open as PR #22.
+- PR #22 implementation head `bb8558a8e5bd6168b64a374e652cc54ae5dd958f` passed BLACK ORACLE REPORT CI #75 and is mergeable.
+- BOR-S17-E1 is **ADOPT** after CI and manual contract verification.
 
 ## Active — BOR-S17 runtime HTTP route integration
 
@@ -35,15 +36,17 @@ Presentation transport only. S17 may retrieve a pre-built canonical S15 model th
 Repository-only revert of PR #22. S0–S16 canonical artifacts, API contract, runtime health/version endpoints, database schema, and deployment configuration remain unchanged.
 
 ### Research review / constraints
-DI-001/003/004, AIML-005/006, BOR-S8-E1 through BOR-S16-E1 constrain S17. BOR-S17-H1: dependency-injected route composition can expose S16 without widening authority. BOR-S17-E1 remains **PENDING** until fresh PR CI and artifact verification complete.
+DI-001/003/004, AIML-005/006, BOR-S8-E1 through BOR-S16-E1 constrain S17. BOR-S17-H1 is supported by BOR-S17-E1; **BOR-S17-E1 = ADOPT**. Research → Hypothesis → Experiment → Result → Adopt/Reject lineage is preserved in `docs/research/2026-09-22-s17-alpha-http-route-review.md`.
 
-### Implementation record
-- `src/httpRuntime.ts`: adds read-only `AlphaReadModelResolver` and `/api/alpha/report` delegation to S16.
-- `src/httpRuntime.test.ts`: adds canonical preservation, unavailable, tamper, method/no-read, and route-isolation cases.
-- No persistence, provider, deployment, trading, publication or BOT contract changed.
+### Verification record
+- CI #75: SUCCESS on implementation head `bb8558a8e5bd6168b64a374e652cc54ae5dd958f`.
+- Runtime delegates the complete S16 body; no field-level Evidence/citation/scenario/uncertainty transformation exists in S17.
+- Resolver executes only for GET `/api/alpha/report`; unsupported methods do not read model state.
+- Missing/tampered states remain explicit S16 fail-closed responses.
+- `/health` and `/version` remain isolated; no persistence/provider/deployment/trading/publication/BOT contract changed.
 
 ### Exact next gate
-Fresh CI on PR #22 → if green, verify returned model identity/fingerprint/citation/scenario/uncertainty and fixed authority=false contract → update BOR-S17-E1 Result to ADOPT/REJECT → docs-inclusive final CI → merge only when green and mergeable.
+Run docs-inclusive final CI on the post-verification PR #22 head → require green and mergeable → squash merge PR #22. Do not merge if final CI fails or head moves without re-verification.
 
 ## Current blockers
 - **CONFIRMED external:** Railway free-plan resource provision limit blocks independent BOR runtime/database provisioning.
@@ -52,7 +55,7 @@ Fresh CI on PR #22 → if green, verify returned model identity/fingerprint/cita
 - Repository-only S17 work is unblocked.
 
 ## Cycle exit record
-- Phase: **IMPLEMENT COMPLETE → TEST/VERIFY CI GATE**
+- Phase: **VERIFY / DOCUMENT COMPLETE → FINAL CI / MERGE GATE**
 - PR: #22 (`bor-s17-alpha-http-route` → `main`).
-- Research result: **BOR-S17-E1 PENDING**.
-- Single next priority: fresh PR #22 CI and integrity verification; do not merge before green.
+- Research result: **BOR-S17-E1 ADOPT**.
+- Single next priority: docs-inclusive final CI on PR #22; if green and mergeable, squash merge.
