@@ -3,38 +3,40 @@
 Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: black_oracle_report
-Status: **S20 ACTIVE — CANONICAL ALPHA MODEL ARTIFACT PERSISTENCE**
+Status: **S20 VERIFIED / ADOPT — FINAL CI + MERGE GATE**
 
 ## Completed baseline
 - BOR-S0 through BOR-S19 complete.
 - S19 resolver merged as PR #25 / a398575adbbc3505257e0f945648e9ecd1205a77.
-- S19 reads BOR_ALPHA_READ_MODEL_PATH through the existing S16 integrity/no-authority gate.
 
-## BOR-S20
-### Objective
-Provide one BOR-owned atomic persistence sink for an already-verified Alpha read model so S19 can consume real canonical state without partial-file exposure.
-
-### Delivered
+## BOR-S20 delivered
 - persistAlphaReadModelArtifact
 - persistConfiguredAlphaReadModelArtifact
 - S16 validity required before any write
 - mode-0600 temporary file + fsync + same-directory atomic rename
 - cleanup on write/rename failure
-- same explicit BOR_ALPHA_READ_MODEL_PATH contract as S19
-- round-trip tests through the real S19 resolver/API gate
-- invalid/tampered/authority-escalated model rejection
-- atomic replacement and failure-cleanup tests
+- same BOR_ALPHA_READ_MODEL_PATH contract as S19
+- round-trip through S19 resolver/API gate
+- tampered/authority-escalated model rejection
+- atomic replacement and cleanup verification
+
+## Verification
+- exact implementation/docs head: e7adf19218b887bb08c0b4a8957d41804f56cb5d
+- BLACK ORACLE REPORT CI #35684260234 — **SUCCESS**
+- PR #26 mergeable after implementation CI — expected to remain gated by final head check
+- BOR-S20-E1 — **ADOPT**
 
 ## Safety boundary
 Persistence only. No research synthesis, provider/network call, BOT dependency, public publication, execution authority, broker credential, order or Risk bypass.
 
 ## Exact next gate
-Open PR → exact-head BLACK ORACLE REPORT CI → verify atomic/integrity/no-authority behavior → BOR-S20-E1 ADOPT/REJECT → final docs-inclusive CI → merge only if green.
+Require fresh docs-inclusive BLACK ORACLE REPORT CI on final PR #26 head. If green and mergeable, squash merge.
 
 ## Blocker truth
-Railway independent runtime/storage provisioning remains external. Repository persistence semantics are independently testable.
+Railway independent runtime/storage provisioning remains external. Repository persistence semantics are independently verified.
 
 ## Cycle exit record
-- Phase: **IMPLEMENT → CI GATE**
-- Blocker: exact-head CI pending
-- Single next priority: **verify atomic canonical model persistence**
+- Phase: **VERIFY / DOCUMENT COMPLETE → FINAL CI / MERGE GATE**
+- PR: #26
+- Research result: **BOR-S20-E1 ADOPT**
+- Single next priority: **final docs-inclusive CI, then merge if green**
