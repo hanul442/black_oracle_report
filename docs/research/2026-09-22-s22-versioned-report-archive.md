@@ -1,9 +1,9 @@
 # BOR-S22 Research Review — Versioned Report Archive
 
 Date: 2026-09-22
-Status: EXPERIMENT PENDING
+Status: ADOPT
 Hypothesis: BOR-S22-H1
-Experiment: BOR-S22-E1 = PENDING
+Experiment: BOR-S22-E1 = ADOPT
 
 ## Research lineage
 `REPORT_CONSISTENCY_V1 → BOR-S15 Alpha Read Model → BOR-S16 integrity gate → BOR-S19 resolver → BOR-S20 atomic persistence → BOR-S21 publish cycle → BOR-S22-H1/E1`
@@ -20,5 +20,13 @@ A content-addressed append-only archive of already-verified Alpha read models ca
 ## Experiment design
 Implement a narrow BOR-owned archive writer. It reuses the canonical S16 integrity gate, derives a deterministic archive ID from immutable report/projection/version/fingerprint identity, and creates the version artifact without overwrite. Exact replay is idempotent. A pre-existing path with different bytes is a collision/tamper failure. Unsafe or missing archive-root input fails closed. The archive layer does not alter the model, call providers, access BOT state, or publish externally.
 
-## Adoption gate
-E1 passes only if deterministic tests and CI demonstrate: archived JSON deep-equals the canonical model; citation IDs, three scenarios, disagreements/data gaps and fingerprint survive unchanged; all authority flags remain false; exact replay is idempotent; collision/tamper and invalid-root cases fail closed. Otherwise REJECT or revise without weakening upstream contracts.
+## Result
+- Implementation head `6f8915f82931e89e907a7d558663cffc6601be11` passed BLACK ORACLE REPORT CI #99.
+- Deterministic tests verify archived JSON deep-equals the canonical model and preserve citation IDs, Bull/Base/Bear scenarios, unresolved disagreements, data gaps, and content fingerprint.
+- Exact replay returns the same archive identity without replacing bytes.
+- Pre-existing different bytes fail closed as collision/tamper; unsafe identity, authority escalation, and missing archive root fail closed.
+- Archive result keeps `executionAuthority=false`, `reportPublicationAuthority=false`, and `botDependency=false`.
+- No broker credentials, orders, BOT state/database/runtime dependency, Risk bypass, provider/network calls, execution authority, or publication authority were introduced.
+
+## Decision
+**ADOPT — BOR-S22-E1.** The immutable versioned archive satisfies the Alpha acceptance gate without weakening canonical integrity or BOR's no-authority boundary. Final merge remains gated on docs-inclusive GREEN CI for the adoption-record head.
