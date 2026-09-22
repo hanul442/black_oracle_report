@@ -1,7 +1,7 @@
 # BOR-S24 Deterministic HTML Renderer Research Review
 
 Date: 2026-09-23
-Status: EXPERIMENT PENDING
+Status: ADOPT
 
 ## Research → Hypothesis → Experiment → Result → Adopt/Reject
 
@@ -31,7 +31,11 @@ Implement a renderer that:
 Repository/local artifact only. No public publication, external renderer, broker credential, order, BOT dependency, Risk bypass, archive mutation, remote assets, or deployment claim.
 
 ### Result
-PENDING implementation and fresh CI.
+- PR #32 implementation head `8a5d57253d84ecc9acbbb381f0fed7128bf5394c` passed BLACK ORACLE REPORT CI run #114.
+- Direct source/test verification confirms deterministic repeat rendering, SHA-256 over emitted HTML, preservation of Bull/Base/Bear labels, evidence and contradicting-evidence IDs, unresolved disagreements and data gaps, and HTML escaping of report-controlled text.
+- Negative tests fail closed on tampered export fingerprint, PDF input, authority escalation and empty canonical identity.
+- Renderer performs only local hashing/string transformation and returns `executionAuthority=false` and `reportPublicationAuthority=false`; no network/provider/browser/BOT/trading/publication path is introduced.
+- This result is repository/local-artifact evidence only; it does not establish production durability or deployment.
 
 ### Adopt / Reject
-**PENDING — BOR-S24-E1.** Adoption requires passing CI plus direct verification of deterministic bytes, escaped untrusted text, citation/scenario/uncertainty preservation, fingerprint integrity and zero authority.
+**ADOPT — BOR-S24-E1.** The hypothesis is supported within repository/local-artifact scope. S24 is accepted as the deterministic zero-authority HTML presentation boundary, subject to final docs-inclusive CI before merge.
