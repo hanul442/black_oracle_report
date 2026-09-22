@@ -1,9 +1,9 @@
 # BOR-S22 Research Review — Versioned Report Archive
 
 Date: 2026-09-22
-Status: PROVISIONAL ADOPT — current-main integration verification pending
+Status: ADOPT
 Hypothesis: BOR-S22-H1
-Experiment: BOR-S22-E1
+Experiment: BOR-S22-E1 = ADOPT
 
 ## Research lineage
 `REPORT_CONSISTENCY_V1 → BOR-S15 Alpha Read Model → BOR-S16 integrity gate → BOR-S19 resolver → BOR-S20 atomic persistence → BOR-S21 publish cycle → BOR-S22-H1/E1`
@@ -21,11 +21,16 @@ A content-addressed append-only archive of already-verified Alpha read models ca
 ## Experiment design
 Implement a narrow BOR-owned archive writer. Reuse the canonical S16 integrity gate, derive deterministic archive identity from immutable report/projection/version/fingerprint identity, and create each version without overwrite. Exact replay is idempotent. A pre-existing path with different bytes is collision/tamper failure. Unsafe or missing archive-root input fails closed. The archive layer does not alter the model, call providers, access BOT state, or publish externally.
 
-## Prior result and recovery constraint
+## Result
 - Original implementation head `6f8915f82931e89e907a7d558663cffc6601be11` passed BLACK ORACLE REPORT CI #99.
 - Adoption-record head `ea5d7db389e26324c0dec9f255b687b3578a9008` passed docs-inclusive CI #101.
 - PR #28 became non-mergeable after foundation PR #29 advanced `main` and independently changed `ACTIVE_SPRINT`.
-- Recovery therefore reapplies the exact S22 implementation/tests onto current `main` rather than overwriting foundation history.
+- Recovery reapplied S22 onto foundation `main` without discarding its lockfile, runtime verification or deployment runbook.
+- Current-main recovery head `2e6d4443f863c4b6279cf6ae98fb295d2a28f574` passed BLACK ORACLE REPORT CI #105.
+- Deterministic tests verify archived JSON deep-equals the canonical model, citation IDs and all three scenarios survive unchanged, unresolved disagreements/data gaps and fingerprint survive unchanged, exact replay is idempotent, tamper/collision fails closed, unsafe identity/missing root fails closed, and authority escalation is rejected.
+- Foundation regression boundary remains intact because S22 changes only the archive module/tests/research/control document and does not alter runtime build/deploy files.
 
-## Decision gate
-Retain **PROVISIONAL ADOPT** until the rebased/current-main implementation passes fresh CI and deterministic verification. Then record `BOR-S22-E1 = ADOPT`; otherwise REJECT/repair without weakening canonical integrity or BOR's no-authority boundary.
+## Decision
+`BOR-S22-E1 = ADOPT`.
+
+The evidence supports the hypothesis at repository/local-artifact scope. This decision does **not** claim production durability: independent Railway capacity and BOR-owned durable production storage remain blockers. No broker credentials, order submission, BOT portfolio/database/runtime dependency, Risk bypass, execution authority or publication authority were introduced.
