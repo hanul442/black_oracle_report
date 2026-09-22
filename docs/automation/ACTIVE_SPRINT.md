@@ -1,54 +1,54 @@
 # ACTIVE SPRINT — BOR Alpha v0.1
 
-Date: **2026-09-22**
+Date: **2026-09-23**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S22 MERGED / S23 IMPLEMENTED — CI VERIFICATION GATE**
+Status: **S22 MERGED / S23 ADOPTED — FINAL MERGE GATE**
 
 ## Completed baseline
 - BOR-S0 through BOR-S22 complete.
 - S22 immutable/versioned report archive merged as PR #30 / `27bbb55b808405770c7558d0f91aac0bfd0f9a7e`.
-- Foundation runtime boundary remains merged; repository CI/build contracts are independent from BOT.
+- Foundation runtime boundary remains merged and independent from BOT.
 
 ## BOR-S23 objective
-Add a deterministic, read-only catalog over BOR-owned versioned report archives so Reports/Library surfaces can discover archived artifacts without mutating them or weakening canonical integrity.
+Add a deterministic read-only catalog over BOR-owned versioned report archives for Reports/Library discovery without mutating artifacts or weakening canonical integrity.
 
 ## Acceptance criteria
-- enumerate only safe archive entries rooted beneath an explicit BOR archive root
-- parse each candidate as JSON and accept only artifacts that pass the existing canonical Alpha model integrity/no-authority gate
-- derive catalog metadata from verified artifact content and require recomputed S22 archive identity to match the filename
-- expose deterministic newest-first metadata sufficient for Reports/Library: projection/report/series/version/asOf/fingerprint, citation/scenario/disagreement/data-gap counts
-- reject malformed, tampered, authority-escalated, identity-mismatched, symlinked or unsafe entries explicitly; never present them as valid reports
-- catalog operation is read-only and deterministic; no artifact rewrite, publication, network/provider call, broker credential, BOT state/database/runtime dependency, Risk bypass, execution or publication authority
-- preserve missing/contradictory evidence as counts/metadata rather than repairing or suppressing it
+- only safe regular non-symlink JSON archive entries are candidates
+- every candidate passes the existing canonical Alpha integrity/no-authority gate
+- recomputed S22 archive identity matches filename
+- verified payload content supplies deterministic newest-first metadata
+- citation/scenario/disagreement/data-gap counts remain explicit
+- malformed, tampered, authority-escalated, identity-mismatched and unsafe entries are rejected explicitly
+- catalog remains read-only with no trading, publication, BOT dependency or broker credentials
 
 ## Product / safety boundary
-BOR-owned internal research/report discovery only. S23 may read already-archived canonical artifacts and return metadata. It cannot publish externally, trade, alter archive bytes, infer missing evidence, mutate BOT state, or borrow BOT/PAPER storage/runtime/credentials.
+BOR-owned internal research/report discovery only. S23 reads already-archived canonical artifacts and returns metadata. It cannot publish externally, trade, alter archive bytes, infer missing evidence, mutate BOT state, or borrow BOT/PAPER storage/runtime/credentials.
 
 ## Rollback
-If S23 regresses integrity or CI, do not merge PR #31. Revert only the archive-catalog module/tests/research/control-document changes. S22 append-only archive artifacts and S0–S22 contracts remain untouched; rollback never deletes archive history.
+If final CI regresses, do not merge PR #31. Revert only S23 catalog/tests/research/control changes. S22 archive history and S0–S22 contracts remain untouched.
 
 ## Research review / lineage
 `REPORT_CONSISTENCY_V1 → BOR-S15 → BOR-S16 → BOR-S19 → BOR-S20 → BOR-S21 → BOR-S22 → BOR-S23-H1/E1`.
-S23-H1: a read-only catalog can make versioned BOR reports discoverable while treating archive bytes as untrusted until canonical integrity/no-authority verification succeeds.
-Research review recorded in `docs/research/2026-09-22-s23-archive-catalog-review.md`.
+Research/adoption record: `docs/research/2026-09-22-s23-archive-catalog-review.md`.
 
-## Implementation / test state
-- added `alphaReadModelArchiveCatalog.ts`: safe-name filter, regular-file/symlink control, JSON parse gate, S16 integrity/no-authority gate, recomputed S22 archive-ID match, deterministic newest-first metadata
-- added deterministic tests for valid multi-version ordering, citation/scenario/disagreement/data-gap metadata, byte immutability/repeatability, malformed JSON, tamper/fingerprint failure, authority escalation, identity mismatch, unsafe names and symlinks
-- PR #31 opened from current S22 `main`; implementation head before this control update: `aa012a143a95573a6b7ce0742b838d74d7b76cca`
-- fresh CI had not yet materialized at the first post-PR check; `BOR-S23-E1 = PENDING`
+## Verification result
+- PR #31 implementation head `2b496870d7fa4da1995b7dc7e318ee05f7817463` passed BLACK ORACLE REPORT CI #110
+- deterministic fixtures verify valid multi-version discovery and newest-first ordering
+- citation/scenario/disagreement/data-gap metadata is preserved
+- repeated reads are deterministic and archive bytes remain unchanged
+- malformed JSON, fingerprint tamper, authority escalation, archive-ID mismatch, unsafe entries and symlinks fail closed
+- `BOR-S23-E1 = ADOPT`
 
 ## Blocker truth
-- independent Railway project creation remains blocked by the connected workspace free-plan resource provision limit
+- independent Railway project creation remains blocked by workspace resource limits
 - BOR-owned durable production artifact storage is not yet established
-- an unmounted Railway filesystem is not canonical persistence
 - S23 repository work does not claim production durability or deployment
 
 ## Exact next gate
-Fresh PR #31 CI → inspect failures if any → verify actual catalog fixtures and no-authority behavior → record `BOR-S23-E1` ADOPT/REJECT → docs-inclusive final CI → merge only if green and mergeable. No deployment is claimed while independent runtime/storage provisioning remains blocked.
+Fresh docs-inclusive CI on the adoption-record head → re-check PR #31 mergeability and blocker truth → squash merge only if green.
 
 ## Cycle exit target
-- Phase: **TEST → VERIFY**
-- Research: `BOR-S23-E1 = PENDING`
-- Single next priority: **fresh PR #31 CI and verified catalog adoption decision**
+- Phase: **VERIFY → DOCUMENT → PR/MERGE**
+- Research: `BOR-S23-E1 = ADOPT`
+- Single next priority: **final docs-inclusive CI and safe PR #31 merge**
