@@ -2,41 +2,41 @@
 
 Date: **2026-09-22**
 Target release: **2026-10-20 — Alpha v0.1**
-Repository: black_oracle_report
-Status: **S20 VERIFIED / ADOPT — FINAL CI + MERGE GATE**
+Repository: `hanul442/black_oracle_report`
+Status: **S20 COMPLETE / S21 ACTIVE**
 
 ## Completed baseline
-- BOR-S0 through BOR-S19 complete.
-- S19 resolver merged as PR #25 / a398575adbbc3505257e0f945648e9ecd1205a77.
+- BOR-S0 through BOR-S20 complete.
+- S20 atomic verified artifact persistence merged as PR #26 / `97b7c4e1b98abd182660ca386c9f76f307529ba8`.
 
-## BOR-S20 delivered
-- persistAlphaReadModelArtifact
-- persistConfiguredAlphaReadModelArtifact
-- S16 validity required before any write
-- mode-0600 temporary file + fsync + same-directory atomic rename
-- cleanup on write/rename failure
-- same BOR_ALPHA_READ_MODEL_PATH contract as S19
-- round-trip through S19 resolver/API gate
-- tampered/authority-escalated model rejection
-- atomic replacement and cleanup verification
+## BOR-S21 objective
+Add the smallest BOR-owned orchestration boundary that creates an Alpha read model only from already-versioned report/export/consistency parents and persists it through the S20 atomic writer. This is an internal artifact handoff, not public publication.
 
-## Verification
-- exact implementation/docs head: e7adf19218b887bb08c0b4a8957d41804f56cb5d
-- BLACK ORACLE REPORT CI #35684260234 — **SUCCESS**
-- PR #26 mergeable after implementation CI — expected to remain gated by final head check
-- BOR-S20-E1 — **ADOPT**
+## Acceptance criteria
+- compose existing S15 `createAlphaReadModel` with S20 persistence; do not duplicate either contract
+- require explicit projection id and artifact path
+- parent report/export consistency and no-authority checks remain fail-closed through S15/S16
+- persistence remains atomic through S20
+- return only model + persistence receipt needed for verification
+- deterministic tests cover valid handoff plus parent inconsistency / authority escalation / invalid path rejection
+- no network/provider calls and no BOT dependency
 
-## Safety boundary
-Persistence only. No research synthesis, provider/network call, BOT dependency, public publication, execution authority, broker credential, order or Risk bypass.
+## Product / safety boundary
+Internal BOR artifact generation only. No broker credentials, orders, BOT state/database/runtime dependency, Risk bypass, public report publication, execution authority, or publication authority. Missing/contradictory evidence remains represented by the canonical report/model rather than repaired here.
+
+## Rollback
+Delete the S21 orchestration module/tests/docs. S15 model creation, S19 read resolver, and S20 persistence remain independently usable and unchanged.
+
+## Research review gate
+Review S15 Alpha read-model contract, S19 resolver, S20 persistence experiment, report consistency contract, and the no-authority precedents before implementation. Record `BOR-S21-H1/E1` lineage.
 
 ## Exact next gate
-Require fresh docs-inclusive BLACK ORACLE REPORT CI on final PR #26 head. If green and mergeable, squash merge.
+Research review → implement composition-only orchestration → deterministic CI → verify artifact/citation/scenario/uncertainty fingerprints and authority=false → ADOPT/REJECT → docs-inclusive CI → merge if green.
 
 ## Blocker truth
-Railway independent runtime/storage provisioning remains external. Repository persistence semantics are independently verified.
+Independent Railway runtime/storage provisioning remains external. Do not borrow BOT/paper/web infrastructure.
 
-## Cycle exit record
-- Phase: **VERIFY / DOCUMENT COMPLETE → FINAL CI / MERGE GATE**
-- PR: #26
-- Research result: **BOR-S20-E1 ADOPT**
-- Single next priority: **final docs-inclusive CI, then merge if green**
+## Cycle exit target
+- Phase: **PLAN → RESEARCH REVIEW**
+- Research: `BOR-S21-H1/E1`
+- Single next priority: **verified canonical model generation-to-persistence handoff**
