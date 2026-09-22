@@ -3,52 +3,52 @@
 Date: **2026-09-23**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S22 MERGED / S23 ADOPTED — FINAL MERGE GATE**
+Status: **S23 MERGED / S24 ADOPTED — FINAL MERGE GATE**
 
 ## Completed baseline
-- BOR-S0 through BOR-S22 complete.
-- S22 immutable/versioned report archive merged as PR #30 / `27bbb55b808405770c7558d0f91aac0bfd0f9a7e`.
-- Foundation runtime boundary remains merged and independent from BOT.
+- BOR-S0 through BOR-S23 complete.
+- S23 verified read-only archive catalog merged as PR #31 / `0d0ac230abe7cd4ee59fa76341407905b474a819`.
+- Foundation runtime boundary remains independent from BOT.
 
-## BOR-S23 objective
-Add a deterministic read-only catalog over BOR-owned versioned report archives for Reports/Library discovery without mutating artifacts or weakening canonical integrity.
+## BOR-S24 objective
+Add a deterministic, self-contained HTML renderer for canonical `bor.report-export.v1` artifacts so Alpha reports have a verifiable presentation artifact before later PDF byte rendering.
 
 ## Acceptance criteria
-- only safe regular non-symlink JSON archive entries are candidates
-- every candidate passes the existing canonical Alpha integrity/no-authority gate
-- recomputed S22 archive identity matches filename
-- verified payload content supplies deterministic newest-first metadata
-- citation/scenario/disagreement/data-gap counts remain explicit
-- malformed, tampered, authority-escalated, identity-mismatched and unsafe entries are rejected explicitly
-- catalog remains read-only with no trading, publication, BOT dependency or broker credentials
+- renderer accepts only `format=HTML` canonical export artifacts
+- export fingerprint is recomputed and verified before rendering
+- rendered HTML preserves report/export identity, thesis, Bull/Base/Bear scenarios, citations, unresolved disagreements and data gaps
+- all untrusted report text is HTML-escaped
+- output is deterministic and has a content SHA-256 fingerprint
+- renderer has no network/provider calls and no external publication or trading authority
+- tampered export, PDF input, malformed/empty identity and authority escalation fail closed
+- deterministic tests cover positive preservation and negative safety cases
 
 ## Product / safety boundary
-BOR-owned internal research/report discovery only. S23 reads already-archived canonical artifacts and returns metadata. It cannot publish externally, trade, alter archive bytes, infer missing evidence, mutate BOT state, or borrow BOT/PAPER storage/runtime/credentials.
+BOR-owned internal research/report rendering only. S24 transforms an already-canonical S12 export into inert HTML bytes. It cannot publish externally, trade, mutate archives/BOT state, infer missing evidence, fetch remote content, grant authority, or hold broker credentials.
 
 ## Rollback
-If final CI regresses, do not merge PR #31. Revert only S23 catalog/tests/research/control changes. S22 archive history and S0–S22 contracts remain untouched.
+If final CI or mergeability regresses, do not merge PR #32. Revert only S24 renderer/tests/research/control changes. S0–S23 contracts and archive history remain untouched.
 
 ## Research review / lineage
-`REPORT_CONSISTENCY_V1 → BOR-S15 → BOR-S16 → BOR-S19 → BOR-S20 → BOR-S21 → BOR-S22 → BOR-S23-H1/E1`.
-Research/adoption record: `docs/research/2026-09-22-s23-archive-catalog-review.md`.
+Lineage: `BOR-S11-E1 → BOR-S12-E1 → REPORT_CONSISTENCY_V1 → BOR-S15/16 → BOR-S22/23 → BOR-S24-H1/E1`.
+Primary precedent: `docs/research/2026-09-21-s12-export-integrity-review.md` — S12 adopted `bor.report-export.v1` as canonical input to later HTML/PDF rendering while preserving citations, uncertainty, identity and zero authority.
+S24 record: `docs/research/2026-09-23-s24-html-renderer-review.md`.
 
 ## Verification result
-- PR #31 implementation head `2b496870d7fa4da1995b7dc7e318ee05f7817463` passed BLACK ORACLE REPORT CI #110
-- deterministic fixtures verify valid multi-version discovery and newest-first ordering
-- citation/scenario/disagreement/data-gap metadata is preserved
-- repeated reads are deterministic and archive bytes remain unchanged
-- malformed JSON, fingerprint tamper, authority escalation, archive-ID mismatch, unsafe entries and symlinks fail closed
-- `BOR-S23-E1 = ADOPT`
+- implementation head `8a5d57253d84ecc9acbbb381f0fed7128bf5394c` passed BLACK ORACLE REPORT CI #114
+- deterministic bytes/content fingerprint, escaping, Bull/Base/Bear, citation and contradicting-evidence IDs, unresolved disagreements/data gaps, and zero-authority behavior verified against implementation/tests
+- tampered fingerprint, PDF input, authority escalation and empty identity fail closed
+- `BOR-S24-E1 = ADOPT` within repository/local-artifact scope
 
 ## Blocker truth
 - independent Railway project creation remains blocked by workspace resource limits
 - BOR-owned durable production artifact storage is not yet established
-- S23 repository work does not claim production durability or deployment
+- S24 does not claim production deployment, public publication or PDF byte rendering
 
 ## Exact next gate
-Fresh docs-inclusive CI on the adoption-record head → re-check PR #31 mergeability and blocker truth → squash merge only if green.
+Fresh docs-inclusive CI on the adoption/control head → re-check PR #32 mergeability → squash merge only if green. No deployment claim while Railway/durable-storage blockers remain.
 
 ## Cycle exit target
-- Phase: **VERIFY → DOCUMENT → PR/MERGE**
-- Research: `BOR-S23-E1 = ADOPT`
-- Single next priority: **final docs-inclusive CI and safe PR #31 merge**
+- Phase: **VERIFY → DOCUMENT → FINAL CI/MERGE GATE**
+- Research: `BOR-S24-E1 = ADOPT`
+- Single next priority: **green docs-inclusive CI and safe merge of PR #32**
