@@ -5,7 +5,9 @@ Repository: `hanul442/black_oracle_report`
 
 ## Placement decision
 
-The Railway workspace is on the Hobby plan with both project slots in use. The user approved consuming the one remaining service slot in the existing `Black Oracle` project for an isolated `black-oracle-report` service. Isolation is enforced at the repository, service-variable, volume, domain, and authority boundaries; BOR does not share BOT credentials or storage.
+The Railway workspace is on the Hobby plan with both project slots in use. `Black Oracle` contains four services and the separate `SOCIAL VEGAS` project contains one. Railway rejected an additional `black-oracle-report` service at the effective workspace ceiling, despite the project-level 4/5 display. No service or domain was created.
+
+Deployment therefore requires Railway support/plan capacity for one additional workspace service, or separate explicit authority to remove an existing service. No existing service is authorized for removal. Once capacity exists, isolation is enforced at the repository, service-variable, volume, domain, and authority boundaries; BOR does not share BOT credentials or storage.
 
 Protected existing Railway services and domains must not be removed, repointed, or reconfigured.
 
@@ -34,7 +36,7 @@ Required service variables:
 - `BOR_ALPHA_READ_MODEL_PATH=/data/alpha-read-model.json`;
 - `BOR_FOUNDATION_ATTESTATION_SEED=true` for the explicit infrastructure-only seed.
 
-Attach one BOR-owned volume at `/data`. Do not use an ephemeral filesystem as durable evidence and do not mount a BOT/PAPER volume.
+Attach one BOR-owned volume at `/data`. Do not use an ephemeral filesystem as durable evidence and do not mount a BOT/PAPER volume. The empty diagnostic volume created during the failed attempt is staged for deletion and must be cleared with Railway dashboard 2FA before a clean retry.
 
 ## Artifact path
 
@@ -58,7 +60,7 @@ When the seed flag is enabled and the target does not exist, startup publishes o
 
 ## Cost
 
-Railway bills actual compute and storage use. Published rates at remediation time are $10/GB-month RAM, $20/vCPU-month CPU, $0.05/GB egress, and $0.15/GB-month used volume storage. Hobby's existing $5 monthly subscription counts toward resource usage. Report observed service metrics and used volume storage after deployment; do not invent a fixed monthly total.
+Railway bills actual compute and storage use. Published rates at remediation time are $10/GB-month RAM, $20/vCPU-month CPU, $0.05/GB egress, and $0.15/GB-month used volume storage. Hobby's existing $5 monthly subscription counts toward resource usage. The failed attempt created no compute cost. Until dashboard 2FA applies the staged cleanup, the empty volume is the only possible incremental charge. Report observed service metrics and used storage after any later deployment; do not invent a fixed monthly total.
 
 ## Rollback
 
