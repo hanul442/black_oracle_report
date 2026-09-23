@@ -3,52 +3,48 @@
 Date: **2026-09-23**
 Target release: **2026-10-20 — Alpha v0.1**
 Repository: `hanul442/black_oracle_report`
-Status: **S24 MERGED / S25 ADOPTED — FINAL MERGE GATE**
+Status: **S25 MERGED / S26 PLAN — PDF BYTE RENDERER**
 
 ## Completed baseline
-- BOR-S0 through BOR-S24 complete.
-- S24 deterministic verified HTML renderer merged as PR #32 / `2099603de86f50a367226a6a7229f76b149ea248`.
+- BOR-S0 through BOR-S25 complete.
+- S25 deterministic PDF render manifest merged as PR #33 / `71a8bf1c5f267497aad32da2a9c6f4029bfcb8e0`.
 - Foundation runtime boundary remains independent from BOT.
 
-## BOR-S25 objective
-Add a deterministic, fail-closed PDF export preparation contract over canonical `bor.report-export.v1` PDF artifacts. Alpha must be able to produce a renderer-neutral, citation-complete PDF render manifest before any external PDF engine is introduced.
+## BOR-S26 objective
+Add a deterministic, dependency-free PDF byte renderer over the adopted `bor.pdf-render-manifest.v1` contract so Alpha can produce a locally verifiable PDF artifact without browser, provider, network, publication, trading, or BOT authority.
 
 ## Acceptance criteria
-- accepts only canonical `format=PDF` S12 export artifacts
-- recomputes and verifies the S12 export fingerprint before manifest construction
-- preserves report/export identity, thesis, Bull/Base/Bear scenarios, citations, contradicting evidence, unresolved disagreements and data gaps
-- produces deterministic renderer-neutral manifest bytes plus SHA-256 content fingerprint
-- manifest contains no remote assets, scripts, URLs, provider/browser/network instructions or publication side effects
+- accepts only canonical S25 PDF render manifests and recomputes the S25 manifest fingerprint before rendering
+- produces valid deterministic `%PDF-1.4` bytes with a SHA-256 content fingerprint
+- preserves report/export identity, title, thesis, Bull/Base/Bear labels, citation evidence IDs, unresolved disagreements and data gaps in the rendered document text
+- PDF contains no remote assets, JavaScript, launch actions, embedded files, external URLs, provider/browser/network instructions, or publication side effects
 - execution/publication authority remains false and BOT/trading state is unreachable
-- HTML input, tampered export, malformed/empty identity and authority escalation fail closed
-- deterministic tests cover preservation, repeatability and negative safety cases
+- tampered manifest, malformed/empty identity and authority escalation fail closed
+- deterministic tests cover PDF structure, preservation, repeatability and negative safety cases
 
 ## Product / safety boundary
-BOR-owned internal research/report export preparation only. S25 converts an already-canonical S12 PDF export into an inert local render manifest. It does not invoke Chromium, wkhtmltopdf, a provider, browser or network; does not publish; does not mutate report/archive/BOT state; cannot trade; cannot hold broker credentials; and cannot infer missing evidence.
+BOR-owned local research/report rendering only. S26 transforms an already-verified S25 inert manifest into inert PDF bytes. It does not publish, upload, browse, fetch remote content, mutate report/archive/BOT state, trade, hold broker credentials, or infer missing evidence. The renderer is intentionally dependency-free and local-only.
 
 ## Rollback
-If final CI or mergeability regresses, do not merge PR #33. Revert only S25 manifest/tests/research/control changes. S0–S24 contracts and archive history remain untouched.
+If tests, CI, artifact verification, or mergeability regress, do not merge the S26 PR. Revert only S26 renderer/tests/research/control changes. S0–S25 contracts and archive history remain untouched.
 
 ## Research review / lineage
-Lineage: `BOR-S11-E1 → BOR-S12-E1 → REPORT_CONSISTENCY_V1 → BOR-S15/16 → BOR-S22/23 → BOR-S24-E1 → BOR-S25-H1/E1`.
-Primary precedents: `docs/research/2026-09-21-s12-export-integrity-review.md` and `docs/research/2026-09-23-s24-html-renderer-review.md`.
-S25 record: `docs/research/2026-09-23-s25-pdf-manifest-review.md`.
+Lineage pending review: `BOR-S11-E1 → BOR-S12-E1 → REPORT_CONSISTENCY_V1 → BOR-S15/16 → BOR-S22/23 → BOR-S24-E1 → BOR-S25-E1 → BOR-S26-H1/E1`.
+Primary precedents to review before implementation: S12 export integrity, S24 HTML renderer, S25 PDF manifest.
 
 ## Verification result
-- implementation head `111c13b7254e3014785f3e506dd2bc6adcee414c` passed BLACK ORACLE REPORT CI #119
-- direct implementation/test review verified export-fingerprint recomputation, deterministic manifest bytes/content fingerprint, canonical identity/thesis/Bull-Base-Bear/citation/contradicting-evidence/disagreement/data-gap preservation, and zero-authority behavior
-- tampered fingerprint, HTML input, authority escalation and empty identity fail closed
-- `BOR-S25-E1 = ADOPT` within repository/local-artifact scope
+- `BOR-S26-E1 = PENDING`
+- no S26 implementation exists at PLAN gate
 
 ## Blocker truth
 - independent Railway project creation remains blocked by workspace resource limits
 - BOR-owned durable production artifact storage is not yet established
-- S25 does not claim production deployment, public publication or final PDF byte rendering
+- local deterministic PDF bytes do not imply production deployment or public publication
 
 ## Exact next gate
-Fresh docs-inclusive CI on the adoption/control head → re-check PR #33 mergeability → squash merge only if green. No deployment claim while Railway/durable-storage blockers remain.
+RESEARCH REVIEW S12/S24/S25 precedents → record S26 hypothesis/experiment → implement dependency-free PDF byte renderer → tests → direct artifact/citation/data-integrity verification → ADOPT/REJECT → docs-inclusive CI → merge only if green.
 
 ## Cycle exit target
-- Phase: **VERIFY → DOCUMENT → FINAL CI/MERGE GATE**
-- Research: `BOR-S25-E1 = ADOPT`
-- Single next priority: **green docs-inclusive CI and safe merge of PR #33**
+- Phase: **PLAN → RESEARCH REVIEW**
+- Research: `BOR-S26-E1 = PENDING`
+- Single next priority: **review rendering precedents and implement verified local PDF bytes**
