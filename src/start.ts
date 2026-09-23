@@ -1,4 +1,5 @@
 import { createAlphaReadModelFileResolver } from './alphaReadModelFileResolver.js';
+import { ensureFoundationRuntimeSeed } from './foundationRuntimeSeed.js';
 import { createBorHttpServer } from './httpRuntime.js';
 import { BOR_PRODUCT, BOR_RUNTIME_VERSION } from './runtime.js';
 
@@ -9,6 +10,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 }
 
 const host = process.env.HOST?.trim() || '0.0.0.0';
+const foundationSeed = ensureFoundationRuntimeSeed(process.env);
 const resolveAlphaReadModel = createAlphaReadModelFileResolver(process.env);
 const server = createBorHttpServer(process.env, resolveAlphaReadModel);
 
@@ -20,6 +22,13 @@ server.listen(port, host, () => {
     host,
     port,
     alphaReadModelSource: process.env.BOR_ALPHA_READ_MODEL_PATH?.trim() ? 'READ_ONLY_FILE' : 'UNCONFIGURED',
+    foundationSeed: foundationSeed ? {
+      seeded: foundationSeed.seeded,
+      contentFingerprint: foundationSeed.contentFingerprint,
+      executionAuthority: false,
+      reportPublicationAuthority: false,
+      botDependency: false,
+    } : null,
     tradingAuthority: false,
     botDependency: false,
   }) + '\n');
