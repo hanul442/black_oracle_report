@@ -7,7 +7,7 @@ Status: **FEATURE FREEZE / FOUNDATION RUNTIME REMEDIATION**
 
 ## Repository truth
 
-- Current main: `71a8bf1c5f267497aad32da2a9c6f4029bfcb8e0`.
+- S25 base: `71a8bf1c5f267497aad32da2a9c6f4029bfcb8e0`; Foundation runtime preparation merged at `8ae39ea4a7e6e556ebc250555fd2f09bdab11cfa`.
 - BOR-S22 immutable archive, S23 verified archive catalog, S24 deterministic HTML renderer, and S25 deterministic PDF manifest gate are merged.
 - BOR-S26 PDF byte rendering remains isolated in open PR #34. It is not part of Foundation remediation and must not merge until the freeze is lifted.
 - No S22–S26 repository result by itself proves a deployed runtime or durable production storage.
@@ -30,13 +30,14 @@ Use the one approved remaining Railway service slot for one BOR-only service and
 
 - Workspace plan: **Hobby**, not Free.
 - Workspace project capacity: **2/2 projects**.
-- `Black Oracle` project service capacity: **4/5 services** before BOR provisioning.
-- Workspace volume usage observed by the Astra audit: **0/3 volumes** before BOR provisioning.
-- The final service slot is reserved for the approved isolated BOR service. No independent third Railway project is available on the current plan.
+- `Black Oracle` contains four services; the separate `SOCIAL VEGAS` project contains one, for five services across the workspace.
+- Railway rejected a sixth workspace service with provider error text `Free plan resource provision limit exceeded`; this does not change the observed Hobby plan.
+- A temporary empty, unattached 0.5 GB BOR volume was created during diagnosis. Its deletion is staged and requires Railway dashboard 2FA to apply.
+- No BOR service or domain was created and no protected existing resource was changed.
 
 ## Cost boundary
 
-Railway remains usage-based. Hobby includes the existing $5 monthly usage credit; additional BOR cost is actual compute plus volume usage. Published rates at remediation time are $10/GB-month RAM, $20/vCPU-month CPU, $0.05/GB egress, and $0.15/GB-month used volume storage. No database or additional paid project is authorized.
+Railway remains usage-based. Hobby includes the existing $5 monthly usage credit. No BOR compute was provisioned, so incremental service compute is $0. Until the staged cleanup is applied, only the empty volume can accrue storage at $0.15/GB-month of used space. No database or additional paid project is authorized.
 
 ## Freeze
 
@@ -44,10 +45,11 @@ No new BOR feature package begins during this sprint. PR #34 and research-only P
 
 ## Exit gate
 
-1. exact deployed BOR revision attested;
+1. Railway capacity/support permits one additional service and exact deployed BOR revision is attested;
 2. `/health` and `/version` return ready, authority-free state;
 3. mounted BOR-owned volume persists the verified Foundation artifact across redeploy/restart;
 4. `/api/alpha/report` returns the same integrity-gated fingerprint;
 5. no forbidden BOT/trading environment variable is present;
 6. repository CI remains green;
-7. runtime evidence and cost are recorded without claiming production research freshness.
+7. the staged empty-volume cleanup is applied with dashboard 2FA;
+8. runtime evidence and cost are recorded without claiming production research freshness.
