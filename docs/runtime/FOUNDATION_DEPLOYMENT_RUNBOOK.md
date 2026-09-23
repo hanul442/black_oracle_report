@@ -1,50 +1,65 @@
 # BOR Foundation Deployment Runbook
 
-Status: Foundation closure deployment contract
+Status: approved Foundation remediation deployment contract
 Repository: `hanul442/black_oracle_report`
 
-Current provisioning status (2026-09-22): **BLOCKED**. Creation of the required independent Railway project was rejected because the workspace free-plan resource provision limit was exceeded. Do not place BOR inside the BOT project merely to bypass this isolation gate.
+## Placement decision
 
-## Boundary
+The Railway workspace is on the Hobby plan with both project slots in use. The user approved consuming the one remaining service slot in the existing `Black Oracle` project for an isolated `black-oracle-report` service. Isolation is enforced at the repository, service-variable, volume, domain, and authority boundaries; BOR does not share BOT credentials or storage.
 
-BOR deploys as an independent Railway project and service sourced only from this repository. It must not receive BOT Supabase credentials, broker/exchange credentials, PAPER runtime variables, scheduler tokens, or trading authority.
+Protected existing Railway services and domains must not be removed, repointed, or reconfigured.
 
-Required runtime surfaces:
+## Runtime boundary
 
-- `GET /health` — runtime boundary and forbidden-environment check
-- `GET /version` — product/version with `tradingAuthority=false` and `botDependency=false`
-- `GET /api/alpha/report` — integrity-gated read of `BOR_ALPHA_READ_MODEL_PATH`; an absent artifact remains an explicit `404 ALPHA_READ_MODEL_UNAVAILABLE`
+Required surfaces:
 
-## Build and deploy
+- `GET /health` — runtime and forbidden-environment check;
+- `GET /version` — product/version with `tradingAuthority=false` and `botDependency=false`;
+- `GET /api/alpha/report` — integrity-gated read of `BOR_ALPHA_READ_MODEL_PATH`;
+- `GET /` — the same canonical Alpha model rendered without creating a second truth source.
+
+The service must not receive BOT Supabase credentials, broker/exchange credentials, PAPER variables, scheduler tokens, portfolio state, or trading authority.
+
+## Build and configuration
 
 Railway uses `railway.json`:
 
-- build: `npm ci --ignore-scripts && npm run build`
-- start: `npm start`
-- health check: `/health`
+- build: `npm ci --ignore-scripts && npm run build`;
+- start: `npm start`;
+- health check: `/health`.
 
-The committed lockfile is mandatory. A deployment is accepted only when Railway metadata reports the exact Git SHA intended for release; `SUCCESS` alone is insufficient.
+Required service variables:
 
-## Artifact boundary
+- `PORT=3000`;
+- `BOR_ALPHA_READ_MODEL_PATH=/data/alpha-read-model.json`;
+- `BOR_FOUNDATION_ATTESTATION_SEED=true` for the explicit infrastructure-only seed.
+
+Attach one BOR-owned volume at `/data`. Do not use an ephemeral filesystem as durable evidence and do not mount a BOT/PAPER volume.
+
+## Artifact path
 
 The verified path is:
 
-`report/export parents -> consistency verification -> Alpha model generation -> atomic file persistence -> file resolver -> integrity-gated read API`
+`report/export parents -> consistency verification -> Alpha model generation -> atomic persistence -> mounted BOR volume -> file resolver -> integrity-gated read API`
 
-`src/alphaReadModelPublishCycle.test.ts` exercises this complete handoff. The runtime never synthesizes a report when the configured artifact is missing or invalid.
+When the seed flag is enabled and the target does not exist, startup publishes one deterministic Foundation attestation artifact through the production publish API. The artifact states that it is infrastructure-only and carries no market recommendation. If a file already exists, startup verifies and reuses it; invalid state fails startup rather than being overwritten.
 
-Canonical persistence is not yet claimed from an unmounted Railway filesystem. Until BOR-owned durable storage is provisioned, the deployed read endpoint may truthfully return `ALPHA_READ_MODEL_UNAVAILABLE`; this is a Foundation blocker, not a reason to borrow BOT storage.
+`src/foundationRuntimeSeed.test.ts` covers first publish, resolver/API read, durable reuse semantics, disabled no-op, and invalid-existing-artifact failure.
+
+## Deployment acceptance
+
+1. deployment source is this repository and exact approved main SHA;
+2. deployment reports `SUCCESS` and `/health` returns HTTP 200;
+3. `/version` reports all authority flags false;
+4. `/api/alpha/report` returns HTTP 200 with the Foundation attestation title and a stable content fingerprint;
+5. redeploy or restart without deleting the volume and verify the same fingerprint with `seeded=false` in startup logs;
+6. confirm service variables contain no forbidden BOT/trading credentials;
+7. `npm run verify` and exact-head CI pass.
+
+## Cost
+
+Railway bills actual compute and storage use. Published rates at remediation time are $10/GB-month RAM, $20/vCPU-month CPU, $0.05/GB egress, and $0.15/GB-month used volume storage. Hobby's existing $5 monthly subscription counts toward resource usage. Report observed service metrics and used volume storage after deployment; do not invent a fixed monthly total.
 
 ## Rollback
 
-Redeploy the previous BOR service deployment or stop the isolated BOR service. No BOT service, database, scheduler, checkpoint, ledger, or qualification cohort is changed by BOR rollback.
-
-## Smoke checks
-
-1. confirm deployment repository and exact SHA in Railway metadata;
-2. require `/health` HTTP 200 and no forbidden environment blockers;
-3. require `/version` authority flags to remain false;
-4. query `/api/alpha/report` and accept only:
-   - HTTP 200 with a valid fingerprint and all authority flags false; or
-   - HTTP 404 `ALPHA_READ_MODEL_UNAVAILABLE` while durable artifact persistence remains explicitly blocked;
-5. run `npm run verify` against the exact repository head.
+Stop or redeploy only the `black-oracle-report` service. Preserve the volume unless the user separately authorizes deletion. BOR rollback must not touch any BOT service, domain, scheduler, checkpoint, ledger, qualification cohort, database, or Risk configuration.
