@@ -22,6 +22,7 @@ This file is the repository-level index for the R&D pipeline. Detailed sprint/re
 | D-005 | Design/UX | Progressive disclosure: Decision → Why → Audit | REFERENCE / TEST | layered evidence improves decision usability without hiding auditability | UI evaluation pending | pending | pending |
 | DI-006 | Data Infrastructure / Evidence | Evidence transformation lineage | TEST | H-DI006 | EXP-DI006 | pending | pending |
 | Q-005 | Quant / Validation | Strategy search provenance & multiplicity control | TEST | H-Q005 | EXP-Q005 | pending | pending |
+| EV-010 | Evidence / Forecast Validation | Regime-aware forecast uncertainty calibration | TEST | H-EV010 | EXP-EV010 | pending | pending |
 
 ## DI-006 trace
 
@@ -51,13 +52,28 @@ Detailed record: `docs/research/data-infrastructure/cycle-014-evidence-transform
 
 Detailed record: `docs/research/quant/cycle-015-strategy-search-provenance-and-multiplicity-control.md`.
 
+## EV-010 trace
+
+**Research:** 2026 regime-aware conformal research shows that coverage reliability can deteriorate under distribution shift even when pooled calibration looks acceptable; PMLR 2026 FLIPR adds joint multi-horizon calibration, while mature MAPIE/online-conformal implementations provide reproducible baselines. A 2026 conformal-position-sizing study is retained as a negative control because sealed forward evaluation preserved calibration but not the development-window growth advantage.
+
+**Hypothesis H-EV010:** horizon- and regime-sliced calibration with explicit calibration-method provenance will detect overconfidence under distribution shift that pooled confidence metrics miss.
+
+**Experiment EXP-EV010:** on frozen forecasts from the DI-001/DI-003 point-in-time fixture, compare raw uncertainty, static conformal, established adaptive/online conformal, and a regime-aware challenger. Seed volatility shifts, asymmetric downside errors, horizon-specific degradation, stale windows, future-residual leakage, future-informed regime labels, pooled-metric masking, and calibrator cherry-picking. Measure empirical-vs-nominal coverage, worst-regime and horizon coverage gaps, interval score, severe/downside misses, drift detection delay, width, and overhead.
+
+**Result:** PENDING.
+
+**Decision:** TEST. Calibration quality is evidence about uncertainty reliability, not alpha. No forecast ranking, NO-TRADE threshold, position sizing, or production/paper trading behavior changes.
+
+Detailed record: `docs/research/evidence-validation/cycle-016-regime-aware-forecast-uncertainty-calibration.md`.
+
 ## Current implementation priority
 
 1. Close DI-001 + DI-003 deterministic replay / point-in-time validation.
 2. Reuse that fixture for DI-006 lineage fault injection rather than building a separate harness.
-3. Add Q-005 search provenance to Strategy Factory / Experiment Ledger design before automated strategy generation scales up; run EXP-Q005 on synthetic/archived fixtures before making it a promotion gate.
-4. Keep AIML/Council changes behind fixed evaluation and traceability gates.
-5. Do not add infrastructure products merely because they implement a useful standard; prefer BOR-native contracts plus adapters until experiments show operational value.
+3. Emit frozen forecast/outcome pairs from the same fixture and run EV-010 calibration baselines before allowing calibrated uncertainty to affect promotion or NO-TRADE logic.
+4. Add Q-005 search provenance to Strategy Factory / Experiment Ledger design before automated strategy generation scales up; run EXP-Q005 on synthetic/archived fixtures before making it a promotion gate.
+5. Keep AIML/Council changes behind fixed evaluation and traceability gates.
+6. Do not add infrastructure products merely because they implement a useful standard; prefer BOR-native contracts plus adapters until experiments show operational value.
 
 ## Ledger hygiene
 
@@ -67,4 +83,6 @@ Detailed record: `docs/research/quant/cycle-015-strategy-search-provenance-and-m
 - A passing LLM judge is not deterministic validation.
 - A winning backtest is not sufficient evidence unless the search process that produced it is recorded.
 - Composite robustness scores are reporting aids, not estimates of future-profit probability.
+- Calibrated uncertainty is not evidence of alpha; coverage, forecast skill, and trading utility must be evaluated separately.
+- Pooled calibration must not hide horizon- or regime-specific undercoverage.
 - Production/paper trading behavior cannot change from a research status transition alone.
