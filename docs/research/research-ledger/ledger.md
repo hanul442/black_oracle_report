@@ -23,6 +23,7 @@ This file is the repository-level index for the R&D pipeline. Detailed sprint/re
 | DI-006 | Data Infrastructure / Evidence | Evidence transformation lineage | TEST | H-DI006 | EXP-DI006 | pending | pending |
 | Q-005 | Quant / Validation | Strategy search provenance & multiplicity control | TEST | H-Q005 | EXP-Q005 | pending | pending |
 | EV-010 | Evidence / Forecast Validation | Regime-aware forecast uncertainty calibration | TEST | H-EV010 | EXP-EV010 | pending | pending |
+| EV-011 | Evidence / Decision Validation | Uncertainty decomposition & action routing | TEST | H-EV011 | EXP-EV011 | pending | pending |
 
 ## DI-006 trace
 
@@ -66,14 +67,29 @@ Detailed record: `docs/research/quant/cycle-015-strategy-search-provenance-and-m
 
 Detailed record: `docs/research/evidence-validation/cycle-016-regime-aware-forecast-uncertainty-calibration.md`.
 
+## EV-011 trace
+
+**Research:** 2026 Journal of Finance work distinguishes model ambiguity from misspecification; NBER work separates risk from ambiguity in investment decisions; the financial probabilistic-AI literature distinguishes epistemic from aleatoric uncertainty. Recent selective-finance-agent work is useful as an abstention blueprint but does not provide real-market evidence sufficient to adopt a composite uncertainty score.
+
+**Hypothesis H-EV011:** a cause-aware uncertainty state with action-specific routing will detect and route seeded failure modes more appropriately than a single scalar confidence threshold, without materially increasing false abstention on clean fixtures.
+
+**Experiment EXP-EV011:** reuse DI-001/DI-003 replay fixtures and EV-010 forecast/outcome pairs. Compare raw scalar confidence, calibrated scalar uncertainty, decomposed uncertainty without routing, and decomposed uncertainty plus deterministic reason-coded routing. Seed aleatoric volatility, model disagreement, sparse/stale/contradictory evidence, regime shift, operational failure, correlated-model false confidence and resolvable epistemic cases. Measure cause classification, wrong-action routing, false abstention, selective error/risk-coverage, resolution after new evidence, worst-regime behavior, replayability and overhead.
+
+**Result:** PENDING.
+
+**Decision:** TEST. No production/paper trading, strategy/model ranking, position sizing, NO-TRADE threshold, or user-facing confidence change. Decomposition categories and action mappings remain provisional until frozen-holdout evidence supports them.
+
+Detailed record: `docs/research/evidence-validation/cycle-017-uncertainty-decomposition-and-action-routing.md`.
+
 ## Current implementation priority
 
 1. Close DI-001 + DI-003 deterministic replay / point-in-time validation.
 2. Reuse that fixture for DI-006 lineage fault injection rather than building a separate harness.
 3. Emit frozen forecast/outcome pairs from the same fixture and run EV-010 calibration baselines before allowing calibrated uncertainty to affect promotion or NO-TRADE logic.
-4. Add Q-005 search provenance to Strategy Factory / Experiment Ledger design before automated strategy generation scales up; run EXP-Q005 on synthetic/archived fixtures before making it a promotion gate.
-5. Keep AIML/Council changes behind fixed evaluation and traceability gates.
-6. Do not add infrastructure products merely because they implement a useful standard; prefer BOR-native contracts plus adapters until experiments show operational value.
+4. Run EV-011 on those frozen pairs only after the EV-010 scalar baseline exists; do not let uncertainty categories drive live/paper actions until explicit adoption.
+5. Add Q-005 search provenance to Strategy Factory / Experiment Ledger design before automated strategy generation scales up; run EXP-Q005 on synthetic/archived fixtures before making it a promotion gate.
+6. Keep AIML/Council changes behind fixed evaluation and traceability gates.
+7. Do not add infrastructure products merely because they implement a useful standard; prefer BOR-native contracts plus adapters until experiments show operational value.
 
 ## Ledger hygiene
 
@@ -85,4 +101,6 @@ Detailed record: `docs/research/evidence-validation/cycle-016-regime-aware-forec
 - Composite robustness scores are reporting aids, not estimates of future-profit probability.
 - Calibrated uncertainty is not evidence of alpha; coverage, forecast skill, and trading utility must be evaluated separately.
 - Pooled calibration must not hide horizon- or regime-specific undercoverage.
+- A scalar confidence score must not silently collapse market noise, model ambiguity, evidence quality, regime shift, and operational failure into one actionable quantity.
+- Uncertainty decomposition itself is a model and must retain method/version provenance and pass frozen-holdout tests before it can drive action routing.
 - Production/paper trading behavior cannot change from a research status transition alone.
