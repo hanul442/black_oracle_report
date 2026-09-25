@@ -22,6 +22,7 @@ This file is the repository-level index for the R&D pipeline. Detailed sprint/re
 | D-005 | Design/UX | Progressive disclosure: Decision → Why → Audit | REFERENCE / TEST | layered evidence improves decision usability without hiding auditability | UI evaluation pending | pending | pending |
 | DI-006 | Data Infrastructure / Evidence | Evidence transformation lineage | TEST | H-DI006 | EXP-DI006 | pending | pending |
 | Q-005 | Quant / Validation | Strategy search provenance & multiplicity control | TEST | H-Q005 | EXP-Q005 | pending | pending |
+| Q-007 | Quant / Validation | Execution assumption validation | TEST | H-Q007 | EXP-Q007 | pending | pending |
 | EV-010 | Evidence / Forecast Validation | Regime-aware forecast uncertainty calibration | TEST | H-EV010 | EXP-EV010 | pending | pending |
 | EV-011 | Evidence / Decision Validation | Uncertainty decomposition & action routing | TEST | H-EV011 | EXP-EV011 | pending | pending |
 
