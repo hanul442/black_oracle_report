@@ -1,6 +1,6 @@
 # BLACK ORACLE Research Ledger
 
-Last updated: 2026-09-24
+Last updated: 2026-09-29
 
 This file is the repository-level index for the R&D pipeline. Detailed sprint/research documents remain the evidence of record. Status changes require an explicit result; a proposed experiment is not an adoption.
 
@@ -82,6 +82,14 @@ Detailed record: `docs/research/evidence-validation/cycle-016-regime-aware-forec
 
 Detailed record: `docs/research/evidence-validation/cycle-017-uncertainty-decomposition-and-action-routing.md`.
 
+## Cycle 030 reinforcement — vintage-sensitive data & stochastic policies
+
+**DI-003 / H-DI003-VINTAGE:** peer-reviewed 2026 evidence shows widely used Fama–French factor histories can change materially across download vintages, often because of methodology revisions, while newer vintages do not consistently dominate older ones. Historical validation must therefore bind mutable reference datasets to reconstructable vintage/methodology identity, not only observation dates. **EXP-DI003-VINTAGE** reuses the DI-001/DI-003 fixture to seed retroactive revisions, methodology changes, acceptance/public-availability conflation and unrecorded benchmark-vintage substitutions. Result: PENDING. Decision: TEST reinforcement; no new ID.
+
+**Q-005 / H-Q005-STOCH:** peer-reviewed 2026 financial-DRL evidence shows large performance and allocation dispersion across independent training seeds and weakening of apparent outperformance after multi-run and multiplicity-aware evaluation. For stochastic/non-convex learners, seeds, checkpoints and retraining realizations are part of the searched candidate family. **EXP-Q005-STOCH** compares winner-only vs distributional vs multiplicity-aware reporting on frozen PIT data, measuring cross-seed performance/exposure dispersion, allocation distance, rank stability and pre-specified multiplicity diagnostics. Result: PENDING. Decision: TEST reinforcement; no strategy promotion change.
+
+Detailed record: `docs/research/data-infrastructure/cycle-030-vintage-sensitive-reference-data-and-stochastic-policy-evaluation.md`.
+
 ## Current implementation priority
 
 1. Close DI-001 + DI-003 deterministic replay / point-in-time validation.
@@ -105,3 +113,5 @@ Detailed record: `docs/research/evidence-validation/cycle-017-uncertainty-decomp
 - A scalar confidence score must not silently collapse market noise, model ambiguity, evidence quality, regime shift, and operational failure into one actionable quantity.
 - Uncertainty decomposition itself is a model and must retain method/version provenance and pass frozen-holdout tests before it can drive action routing.
 - Production/paper trading behavior cannot change from a research status transition alone.
+- Mutable reference datasets used in historical evaluation must retain reconstructable vintage/methodology identity; an old observation date does not prove an old data vintage.
+- For stochastic/non-convex learners, seeds, checkpoints and retraining realizations are candidate trials and must not be hidden behind a single best run.
