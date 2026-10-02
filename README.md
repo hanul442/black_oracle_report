@@ -1,7 +1,7 @@
 # BLACK ORACLE REPORT
 
 > [!IMPORTANT]
-> **Proj. North Star (REVIEW, 2026-10-02):** [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)는 BLACK ORACLE의 단일 실행 기준 초안이에요. 승인되면 BOT 기능을 이 저장소로 통합하고, 아래 "Explicit non-scope / BOT 독립" 원칙은 North Star §4.2의 모듈·배포 경계로 대체돼요(결정 D-1). 승인 전까지 아래 내용은 현행 그대로 유효해요.
+> **Proj. North Star (APPROVED, 2026-10-02):** [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)가 BLACK ORACLE의 단일 실행 기준이에요. BOT 기능은 이 저장소로 선별 이식 중이고, 아래 "Explicit non-scope / BOT 독립" 원칙은 North Star §4.2의 모듈·배포 경계로 대체됐어요(결정 D-1). 아래 본문은 이식 전 BOR 단독 시절의 기록이에요. 소스 구조는 `src/<domain>/`(North Star §4.3)를 따라요.
 
 **Evidence-first AI research and market-intelligence engine.**
 
