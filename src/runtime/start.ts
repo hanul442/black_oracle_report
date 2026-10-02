@@ -1,4 +1,4 @@
-import { createAlphaReadModelFileResolver } from './alphaReadModelFileResolver.js';
+import { createAlphaReadModelFileResolver } from '../intelligence/report/alphaReadModelFileResolver.js';
 import { ensureFoundationRuntimeSeed } from './foundationRuntimeSeed.js';
 import { createBorHttpServer } from './httpRuntime.js';
 import { BOR_PRODUCT, BOR_RUNTIME_VERSION } from './runtime.js';

@@ -1,7 +1,7 @@
 import {
   fingerprintCanonicalContent,
   type EvidencePacket,
-} from './evidence.js';
+} from '../evidence/evidence.js';
 
 export const RESEARCH_BUNDLE_SCHEMA_VERSION = 'bor.research-bundle.v1' as const;
 export const ANALYST_REVIEW_SCHEMA_VERSION = 'bor.analyst-review.v1' as const;

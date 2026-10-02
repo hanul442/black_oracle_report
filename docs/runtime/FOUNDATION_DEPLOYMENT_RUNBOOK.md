@@ -46,7 +46,7 @@ The verified path is:
 
 When the seed flag is enabled and the target does not exist, startup publishes one deterministic Foundation attestation artifact through the production publish API. The artifact states that it is infrastructure-only and carries no market recommendation. If a file already exists, startup verifies and reuses it; invalid state fails startup rather than being overwritten.
 
-`src/foundationRuntimeSeed.test.ts` covers first publish, resolver/API read, durable reuse semantics, disabled no-op, and invalid-existing-artifact failure.
+`src/runtime/foundationRuntimeSeed.test.ts` covers first publish, resolver/API read, durable reuse semantics, disabled no-op, and invalid-existing-artifact failure.
 
 ## Deployment acceptance
 

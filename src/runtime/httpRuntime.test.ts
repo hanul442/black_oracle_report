@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 
-import type { AlphaReadModel } from './alphaReadModel.js';
+import type { AlphaReadModel } from '../intelligence/report/alphaReadModel.js';
 import { getBorHttpResponse } from './httpRuntime.js';
 
 const NOW = new Date('2026-09-21T04:30:00.000Z');

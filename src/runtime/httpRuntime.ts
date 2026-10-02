@@ -1,8 +1,8 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 
-import { getAlphaReadApiResponse } from './alphaReadApi.js';
-import { renderAlphaReportPage } from './alphaReportPage.js';
-import type { AlphaReadModel } from './alphaReadModel.js';
+import { getAlphaReadApiResponse } from '../intelligence/report/alphaReadApi.js';
+import { renderAlphaReportPage } from '../intelligence/report/alphaReportPage.js';
+import type { AlphaReadModelResolver } from '../intelligence/report/alphaReadModelFileResolver.js';
 import {
   BOR_PRODUCT,
   BOR_RUNTIME_VERSION,
@@ -17,7 +17,7 @@ export interface BorHttpResponse {
   rawBody?: string;
 }
 
-export type AlphaReadModelResolver = () => Readonly<AlphaReadModel> | undefined;
+export type { AlphaReadModelResolver };
 
 function send(res: ServerResponse, response: BorHttpResponse): void {
   res.statusCode = response.statusCode;

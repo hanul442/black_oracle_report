@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
-import type { ResearchBundle } from './researchPipeline.js';
-import type { ResearchCouncilDecision } from './researchCouncil.js';
-import { THESIS_SCENARIO_SCHEMA_VERSION, type ThesisScenarioArtifact } from './thesisScenario.js';
+import type { ResearchBundle } from '../research/researchPipeline.js';
+import type { ResearchCouncilDecision } from '../research/researchCouncil.js';
+import { THESIS_SCENARIO_SCHEMA_VERSION, type ThesisScenarioArtifact } from '../research/thesisScenario.js';
 
 export const REPORT_ARTIFACT_SCHEMA_VERSION = 'bor.report-artifact.v1' as const;
 interface NoAuthority { executionAuthority?: boolean; reportPublicationAuthority?: boolean }

@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import type { AlphaReadModel } from './alphaReadModel.js';
-import type { AlphaReadModelResolver } from './httpRuntime.js';
+
+export type AlphaReadModelResolver = () => Readonly<AlphaReadModel> | undefined;
 
 const invalidModel = (): Readonly<AlphaReadModel> => Object.freeze({} as AlphaReadModel);
 
