@@ -74,7 +74,7 @@ test('fingerprint lookup is explicitly deterministic', async () => {
 });
 
 test('migration encodes BOR authority, point-in-time and append-first invariants', async () => {
-  const sql = await readFile(new URL('../db/migrations/0001_evidence_store.sql', import.meta.url), 'utf8');
+  const sql = await readFile(new URL('../../../db/migrations/0001_evidence_store.sql', import.meta.url), 'utf8');
   assert.match(sql, /schema_version = 'bor\.evidence\.v1'/);
   assert.match(sql, /producer = 'BLACK_ORACLE_REPORT'/);
   assert.match(sql, /execution_authority = FALSE/);

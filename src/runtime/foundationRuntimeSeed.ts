@@ -1,15 +1,15 @@
 import { existsSync } from 'node:fs';
 
-import { getAlphaReadApiResponse } from './alphaReadApi.js';
-import { createAlphaReadModelFileResolver } from './alphaReadModelFileResolver.js';
-import { publishAlphaReadModelArtifact } from './alphaReadModelPublishCycle.js';
-import { createEvidencePacket, fingerprintCanonicalContent } from './evidence.js';
-import { createReportArtifact } from './reportArtifact.js';
-import { verifyReportExportConsistency } from './reportConsistency.js';
-import { createReportExport } from './reportExport.js';
-import { createResearchBundle, createAnalystReview } from './researchPipeline.js';
-import { createResearchCouncilDecision } from './researchCouncil.js';
-import { createThesisScenarioArtifact } from './thesisScenario.js';
+import { getAlphaReadApiResponse } from '../intelligence/report/alphaReadApi.js';
+import { createAlphaReadModelFileResolver } from '../intelligence/report/alphaReadModelFileResolver.js';
+import { publishAlphaReadModelArtifact } from '../intelligence/report/alphaReadModelPublishCycle.js';
+import { createEvidencePacket, fingerprintCanonicalContent } from '../intelligence/evidence/evidence.js';
+import { createReportArtifact } from '../intelligence/report/reportArtifact.js';
+import { verifyReportExportConsistency } from '../intelligence/report/reportConsistency.js';
+import { createReportExport } from '../intelligence/report/reportExport.js';
+import { createResearchBundle, createAnalystReview } from '../intelligence/research/researchPipeline.js';
+import { createResearchCouncilDecision } from '../intelligence/research/researchCouncil.js';
+import { createThesisScenarioArtifact } from '../intelligence/research/thesisScenario.js';
 
 export const FOUNDATION_ATTESTATION_SEED_ENV = 'BOR_FOUNDATION_ATTESTATION_SEED' as const;
 

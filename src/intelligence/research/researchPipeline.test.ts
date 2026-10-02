@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createEvidencePacket, fingerprintCanonicalContent } from './evidence.js';
+import { createEvidencePacket, fingerprintCanonicalContent } from '../evidence/evidence.js';
 import {
   ANALYST_REVIEW_SCHEMA_VERSION,
   RESEARCH_BUNDLE_SCHEMA_VERSION,

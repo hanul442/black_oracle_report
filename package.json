@@ -6,10 +6,10 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck && node --test dist/**/*.test.js",
+    "test": "npm run typecheck && node --test \"dist/**/*.test.js\"",
     "build": "tsc -p tsconfig.json",
-    "verify": "npm run build && node --test dist/**/*.test.js",
-    "start": "node dist/start.js"
+    "verify": "npm run build && node --test \"dist/**/*.test.js\"",
+    "start": "node dist/runtime/start.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

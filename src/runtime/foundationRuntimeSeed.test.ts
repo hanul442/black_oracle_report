@@ -4,8 +4,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 
-import { getAlphaReadApiResponse } from './alphaReadApi.js';
-import { createAlphaReadModelFileResolver } from './alphaReadModelFileResolver.js';
+import { getAlphaReadApiResponse } from '../intelligence/report/alphaReadApi.js';
+import { createAlphaReadModelFileResolver } from '../intelligence/report/alphaReadModelFileResolver.js';
 import { ensureFoundationRuntimeSeed } from './foundationRuntimeSeed.js';
 
 test('seeds, resolves, and reuses a canonical authority-free Foundation artifact', () => {

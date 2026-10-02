@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'; import test from 'node:test';
-import {createEvidencePacket,fingerprintCanonicalContent} from './evidence.js';
-import {createResearchBundle,createAnalystReview} from './researchPipeline.js';
-import {createResearchCouncilDecision} from './researchCouncil.js';
-import {createThesisScenarioArtifact} from './thesisScenario.js';
+import {createEvidencePacket,fingerprintCanonicalContent} from '../evidence/evidence.js';
+import {createResearchBundle,createAnalystReview} from '../research/researchPipeline.js';
+import {createResearchCouncilDecision} from '../research/researchCouncil.js';
+import {createThesisScenarioArtifact} from '../research/thesisScenario.js';
 import {createReportArtifact,type ReportArtifact} from './reportArtifact.js';
 import {createReportExport,type ReportExportArtifact} from './reportExport.js';
 import {verifyReportExportConsistency,type ReportConsistencyResult} from './reportConsistency.js';

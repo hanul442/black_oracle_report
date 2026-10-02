@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'; import test from 'node:test';
-import {createEvidencePacket,fingerprintCanonicalContent} from './evidence.js';
+import {createEvidencePacket,fingerprintCanonicalContent} from '../evidence/evidence.js';
 import {createResearchBundle,createAnalystReview} from './researchPipeline.js';
 import {createResearchCouncilDecision} from './researchCouncil.js';
 import {createThesisScenarioArtifact} from './thesisScenario.js';
