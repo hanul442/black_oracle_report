@@ -22,7 +22,9 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - name: Test (fails if tests silently go missing)
+        shell: bash
         run: |
+          set -o pipefail
           node --test --test-reporter=tap "dist/**/*.test.js" | tee test-output.tap
           passed=$(grep -E '^# pass [0-9]+' test-output.tap | awk '{print $3}')
           echo "passed tests: $passed"
