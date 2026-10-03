@@ -55,7 +55,7 @@ test('maps a content-verified NARS artifact to a BOR evidence packet', () => {
   assert.equal(evidence.provenance.snapshotRef?.startsWith('document:'), true);
   assert.equal(evidence.publishedAt, '2026-09-29T06:13:00.000Z');
   assert.equal(evidence.observedAt, DELIVERED_AT);
-  assert.deepEqual(evidence.asset, { status: 'UNRESOLVED', query: '코위버', reason: 'NARS_ASSET_MAPPING_PENDING' });
+  assert.deepEqual(evidence.asset, { status: 'UNRESOLVED', query: '코위버', reason: 'NARS_ISSUER_NOT_IN_SKELETON' });
 });
 
 test('the same NARS artifact version always gets the same revision fingerprint', () => {
@@ -99,7 +99,22 @@ test('rejects packets that claim execution authority or an unknown schema', () =
 test('falls back to the event title when no issuer entity exists', () => {
   const outcome = mapNarsEvidencePacket(packet({ entities: [] }), NOW).outcomes[0];
   assert.ok(outcome?.status === 'MAPPED');
-  assert.equal(outcome.evidence.asset.status === 'UNRESOLVED' && outcome.evidence.asset.query, '(코스닥)코위버 - [첨부추가]반기보고서 (2026.06)');
+  assert.deepEqual(outcome.evidence.asset, { status: 'UNRESOLVED', query: '(코스닥)코위버 - [첨부추가]반기보고서 (2026.06)', reason: 'NARS_NO_ISSUER_ENTITY' });
+});
+
+test('an SK하이닉스 issuer resolves to the walking-skeleton asset', () => {
+  const outcome = mapNarsEvidencePacket(packet({
+    event_title: '(유가증권)SK하이닉스 - 주요사항보고서',
+    entities: [{ name: 'SK하이닉스', type: 'ISSUER', source: 'verified_primary' }],
+  }), NOW).outcomes[0];
+  assert.ok(outcome?.status === 'MAPPED');
+  assert.deepEqual(outcome.evidence.asset, { status: 'RESOLVED', canonicalAssetId: 'KRX:000660', symbol: '000660' });
+});
+
+test('a title that merely mentions SK하이닉스 is not resolved without an issuer entity', () => {
+  const outcome = mapNarsEvidencePacket(packet({ event_title: '(유가증권)SK하이닉스 - 주요사항보고서', entities: [] }), NOW).outcomes[0];
+  assert.ok(outcome?.status === 'MAPPED');
+  assert.equal(outcome.evidence.asset.status, 'UNRESOLVED');
 });
 
 test('an artifact published after the event was detected is still known once delivered', () => {
