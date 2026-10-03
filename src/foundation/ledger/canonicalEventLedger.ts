@@ -3,6 +3,8 @@
 //
 // Differences from the BOT original:
 //   * an unparseable occurredAt is rejected instead of silently becoming "now";
+//   * an over-long eventKey is rejected instead of truncated (it is the dedup key);
+//   * market is stored uppercase, matching the uppercase read filter;
 //   * the REST adapter takes its configuration and fetch as arguments, so
 //     foundation never reads process.env.
 
@@ -11,6 +13,7 @@ import type { CanonicalEventInput, CanonicalEventRow, CanonicalEventType } from 
 export const CANONICAL_EVENT_SCHEMA_VERSION = 1 as const;
 export const CANONICAL_EVENT_TABLE = 'black_oracle_events' as const;
 const MAX_READ_LIMIT = 500;
+const MAX_EVENT_KEY_LENGTH = 500;
 
 export interface CanonicalEventQuery {
   limit?: number;
@@ -66,13 +69,16 @@ function clipOrNull(value: string | null | undefined, max: number): string | nul
 
 export function toCanonicalEventDbRow(event: CanonicalEventInput): CanonicalEventDbRow {
   if (!event.eventKey?.trim()) throw new Error('EMPTY_EVENT_KEY');
+  // The key is the idempotency identity; truncating it could merge two events.
+  if (event.eventKey.length > MAX_EVENT_KEY_LENGTH) throw new Error('EVENT_KEY_TOO_LONG');
   return {
-    event_key: clip(event.eventKey, 500),
+    event_key: event.eventKey,
     occurred_at: toIso(event.occurredAt),
     runtime_id: clipOrNull(event.runtimeId, 200),
     event_type: event.eventType,
     event_name: clip(event.eventName, 120),
-    market: clipOrNull(event.market, 120),
+    // Stored uppercase so the uppercase market filter on read always matches.
+    market: event.market ? clip(event.market.toUpperCase(), 120) : null,
     strategy_id: clipOrNull(event.strategyId, 300),
     strategy_version: clipOrNull(event.strategyVersion, 200),
     action: clipOrNull(event.action, 80),

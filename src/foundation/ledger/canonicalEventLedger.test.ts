@@ -39,6 +39,21 @@ test('rejects an unparseable occurredAt instead of recording it as now', () => {
   assert.throws(() => toCanonicalEventDbRow(event({ eventKey: ' ' })), /EMPTY_EVENT_KEY/);
 });
 
+test('rejects an over-long event key instead of truncating it into a collision', async () => {
+  const ledger = new InMemoryCanonicalEventLedger(() => 0);
+  const prefix = 'k'.repeat(500);
+  await assert.rejects(ledger.append([event({ eventKey: `${prefix}a` })]), /EVENT_KEY_TOO_LONG/);
+  await ledger.append([event({ eventKey: prefix })]);
+  assert.equal((await ledger.read()).length, 1);
+});
+
+test('market is stored uppercase so any-case filters find it', async () => {
+  const ledger = new InMemoryCanonicalEventLedger(() => 0);
+  await ledger.append([event({ market: 'krw-btc' })]);
+  assert.equal((await ledger.read({ market: 'krw-btc' })).length, 1);
+  assert.equal((await ledger.read({ market: 'KRW-BTC' }))[0]?.market, 'KRW-BTC');
+});
+
 test('clips oversized text fields like the database adapter did', () => {
   const row = toCanonicalEventDbRow(event({ summary: 'x'.repeat(5_000), eventName: 'y'.repeat(500) }));
   assert.equal(row.summary.length, 2_000);
