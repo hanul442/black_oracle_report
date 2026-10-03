@@ -5,6 +5,7 @@ import {
   InMemoryForecastHistory,
   validateForecastHistoryRecord,
   type ForecastHistoryRecord,
+  type RealizedOutcome,
 } from './forecastHistory.js';
 
 const EVIDENCE_R1 = { evidenceId: 'ev-hbm', revisionId: 'sha256:r1', knownAt: '2026-10-01T00:00:00Z' };
@@ -39,11 +40,13 @@ function withoutHorizon(record: ForecastHistoryRecord): ForecastHistoryRecord {
 test('CT-01: reconstruction keeps the consumed revision even when a later revision was known before the cutoff', () => {
   const history = new InMemoryForecastHistory();
   history.write(forecast());
-  // r2 of the same Evidence became known at 06:00, before the 12:00 cutoff.
-  // The forecast consumed r1 and must still read back with r1.
-  const reconstructed = history.getAsOf('KRX:000660', '2026-10-01T12:00:00Z');
+  // r2 of the same Evidence became known at 06:00, before the 12:00 cutoff,
+  // and a later revision of the forecast consumed it - but that revision was
+  // only recorded at 20:00. At the 12:00 cutoff the forecast still read r1.
+  history.write(forecast({ forecastRevisionId: 'rev-2', asOf: '2026-10-01T07:00:00Z', recordedAt: '2026-10-01T20:00:00Z', consumedEvidence: [EVIDENCE_R2] }));
   assert.ok(EVIDENCE_R2.knownAt < '2026-10-01T12:00:00Z');
-  assert.deepEqual(reconstructed?.consumedEvidence, [EVIDENCE_R1]);
+  assert.deepEqual(history.getAsOf('KRX:000660', '2026-10-01T12:00:00Z')?.consumedEvidence, [EVIDENCE_R1]);
+  assert.deepEqual(history.getAsOf('KRX:000660', '2026-10-01T21:00:00Z')?.consumedEvidence, [EVIDENCE_R2]);
 });
 
 test('rejects complete lineage without an exact Evidence revision', () => {
@@ -128,11 +131,41 @@ test('legacy records without exact lineage stay readable but never serve point-i
   assert.equal(history.getAsOf('KRX:000660', '2026-10-01T12:00:00Z'), null);
 });
 
-test('stored records are frozen copies', () => {
+test('stored records are deeply frozen copies', () => {
   const history = new InMemoryForecastHistory();
   const input = forecast();
   history.write(input);
   (input.payload as Record<string, unknown>).mid = 0;
-  assert.equal(history.getById('fc-000660-price', 'rev-1')?.payload.mid, 220000);
-  assert.ok(Object.isFrozen(history.getById('fc-000660-price', 'rev-1')));
+  const read = history.getById('fc-000660-price', 'rev-1')!;
+  assert.equal(read.payload.mid, 220000);
+  assert.throws(() => { (read.consumedEvidence[0] as { revisionId: string }).revisionId = 'sha256:r2'; }, TypeError);
+  assert.throws(() => { (read.payload as Record<string, unknown>).mid = 1; }, TypeError);
+  assert.equal(history.getAsOf('KRX:000660', '2026-10-01T12:00:00Z')?.consumedEvidence[0]?.revisionId, 'sha256:r1');
+});
+
+test('re-writing the same record with a different key order is idempotent', () => {
+  const history = new InMemoryForecastHistory();
+  history.write(forecast());
+  const reordered = Object.fromEntries(Object.entries(forecast()).reverse()) as unknown as ForecastHistoryRecord;
+  assert.deepEqual(history.write(reordered), { status: 'ALREADY_PRESENT' });
+});
+
+test('realized outcomes cannot be altered through the read result', () => {
+  const history = new InMemoryForecastHistory();
+  history.write(forecast());
+  history.linkRealizedOutcome({ forecastArtifactId: 'fc-000660-price', forecastRevisionId: 'rev-1', observedAt: '2026-10-08T06:30:00Z', outcome: { close: 228500 } });
+  const outcomes = history.getRealizedOutcomes('fc-000660-price', 'rev-1') as RealizedOutcome[];
+  assert.throws(() => outcomes.push({ forecastArtifactId: 'x', forecastRevisionId: 'y', observedAt: '2026-10-01T00:00:00Z', outcome: {} }), TypeError);
+  assert.equal(history.getRealizedOutcomes('fc-000660-price', 'rev-1').length, 1);
+});
+
+test('latest revision is deterministic when write times tie', () => {
+  const a = new InMemoryForecastHistory();
+  const b = new InMemoryForecastHistory();
+  const revA = forecast({ forecastRevisionId: 'rev-a' });
+  const revB = forecast({ forecastRevisionId: 'rev-b' });
+  a.write(revA); a.write(revB);
+  b.write(revB); b.write(revA);
+  assert.equal(a.getById('fc-000660-price')?.forecastRevisionId, 'rev-b');
+  assert.equal(b.getById('fc-000660-price')?.forecastRevisionId, 'rev-b');
 });

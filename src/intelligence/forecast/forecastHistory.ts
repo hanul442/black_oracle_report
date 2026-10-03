@@ -105,8 +105,34 @@ function identity(artifactId: string, revisionId: string): string {
   return `${artifactId}\u0000${revisionId}`;
 }
 
-function freeze<T>(value: T): T {
-  return Object.freeze(structuredClone(value));
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    for (const child of Object.values(value)) deepFreeze(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+function frozenCopy<T>(value: T): T {
+  return deepFreeze(structuredClone(value));
+}
+
+/** Key-order-independent identity used to recognise an identical re-write. */
+function canonicalJson(value: unknown): string {
+  return JSON.stringify(value, (_key, v: unknown) => {
+    if (typeof v === 'bigint') return `bigint:${v.toString()}`;
+    if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+      return Object.fromEntries(Object.entries(v).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
+    }
+    return v;
+  });
+}
+
+/** Deterministic order: as-of, then write time, then revision id. */
+function compareRevisions(a: ForecastHistoryRecord, b: ForecastHistoryRecord): number {
+  return Date.parse(a.asOf) - Date.parse(b.asOf)
+    || Date.parse(a.recordedAt) - Date.parse(b.recordedAt)
+    || (a.forecastRevisionId < b.forecastRevisionId ? -1 : a.forecastRevisionId > b.forecastRevisionId ? 1 : 0);
 }
 
 /**
@@ -115,17 +141,17 @@ function freeze<T>(value: T): T {
  */
 export class InMemoryForecastHistory {
   readonly #records = new Map<string, ForecastHistoryRecord>();
-  readonly #outcomes = new Map<string, RealizedOutcome[]>();
+  readonly #outcomes = new Map<string, readonly RealizedOutcome[]>();
 
   write(record: ForecastHistoryRecord): ForecastWriteResult {
     validateForecastHistoryRecord(record);
     const key = identity(record.forecastArtifactId, record.forecastRevisionId);
     const existing = this.#records.get(key);
     if (existing) {
-      if (JSON.stringify(existing) !== JSON.stringify(record)) throw new Error('FORECAST_REVISION_IMMUTABLE');
+      if (canonicalJson(existing) !== canonicalJson(record)) throw new Error('FORECAST_REVISION_IMMUTABLE');
       return { status: 'ALREADY_PRESENT' };
     }
-    this.#records.set(key, freeze(record));
+    this.#records.set(key, frozenCopy(record));
     return { status: 'APPENDED' };
   }
 
@@ -133,7 +159,7 @@ export class InMemoryForecastHistory {
     if (forecastRevisionId !== undefined) return this.#records.get(identity(forecastArtifactId, forecastRevisionId)) ?? null;
     const revisions = [...this.#records.values()]
       .filter((r) => r.forecastArtifactId === forecastArtifactId)
-      .sort((a, b) => Date.parse(a.recordedAt) - Date.parse(b.recordedAt));
+      .sort((a, b) => Date.parse(a.recordedAt) - Date.parse(b.recordedAt) || compareRevisions(a, b));
     return revisions.at(-1) ?? null;
   }
 
@@ -143,7 +169,7 @@ export class InMemoryForecastHistory {
     return [...this.#records.values()]
       .filter((r) => r.assetId === assetId && (options.kind === undefined || r.kind === options.kind))
       .filter((r) => Date.parse(r.asOf) >= fromMs && Date.parse(r.asOf) <= toMs)
-      .sort((a, b) => Date.parse(a.asOf) - Date.parse(b.asOf) || Date.parse(a.recordedAt) - Date.parse(b.recordedAt));
+      .sort(compareRevisions);
   }
 
   /**
@@ -166,7 +192,7 @@ export class InMemoryForecastHistory {
       throw new Error('OUTCOME_NOT_AFTER_AS_OF');
     }
     const key = identity(outcome.forecastArtifactId, outcome.forecastRevisionId);
-    this.#outcomes.set(key, [...(this.#outcomes.get(key) ?? []), freeze(outcome)]);
+    this.#outcomes.set(key, deepFreeze([...(this.#outcomes.get(key) ?? []), frozenCopy(outcome)]));
   }
 
   getRealizedOutcomes(forecastArtifactId: string, forecastRevisionId: string): readonly RealizedOutcome[] {

@@ -57,7 +57,7 @@ BOR Evidence에서 `revisionId`는 `contentFingerprint`, `knownAt`은 `observedA
 
 | # | 경우 | 기대 |
 |---|---|---|
-| 1 | **CT-01 반례:** r1을 쓴 예측, cutoff 전에 r2가 알려짐 | 재구성 결과는 r1 |
+| 1 | **CT-01 반례:** r1을 쓴 예측, cutoff 전에 r2가 알려졌고 r2를 쓴 리비전은 cutoff 뒤에 기록됨 | cutoff 재구성 결과는 r1 |
 | 2 | `COMPLETE`인데 리비전 없음 | 거부 |
 | 3 | `asOf` 이후에 알게 된 근거 | 거부 |
 | 4 | `asOf` 이전 시각에 기록 | 거부 |
@@ -68,7 +68,10 @@ BOR Evidence에서 `revisionId`는 `contentFingerprint`, `knownAt`은 `observedA
 | 9 | FAIR_VALUE와 FUTURE_PRICE 공존 | 서로 섞이지 않음, horizon 규칙 강제 |
 | 10 | 실제 결과 연결 | 예측 불변, `asOf` 이전 결과 거부 |
 | 11 | legacy 기록 | 이력에는 나오고 시점 조회에는 안 나옴 |
-| 12 | 저장 후 원본 수정 | 저장본은 얼어 있음 |
+| 12 | 저장 후 원본·반환값 수정 | 저장본은 안쪽까지 얼어 있음 |
+| 13 | 키 순서만 다른 동일 기록 재쓰기 | 멱등 |
+| 14 | 실제 결과 목록을 반환값으로 수정 | 불가 |
+| 15 | 기록 시각이 같은 리비전 | 결과가 쓰기 순서와 무관 |
 
 ## 5. 남은 일 (M3)
 
