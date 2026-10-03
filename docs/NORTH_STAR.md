@@ -416,7 +416,7 @@ Frozen §13(Foundation → Decision Engine → Experience)을 따르되, **한 �
 
 1. ✅ **M0 골격:** BOR 코드를 도메인 폴더로 재배치(동작 불변), 경계 테스트, CI 테스트 누락 방지.
 2. ✅ **C1 History 계약 수정:** [Forecast History Contract v2](contracts/FORECAST_HISTORY_CONTRACT_V2.md)와 참조 구현 `src/intelligence/forecast/forecastHistory.ts`. 실제로 소비한 근거 리비전을 반드시 묶고, CT-01 반례 테스트를 포함해요(2026-10-03).
-3. 🔶 **M1 foundation 이식:** 1차로 순수 계약 모듈(`canonicalData`, `decisionRunVersionRegistry`, `eventEvidenceLineage`, `marketAssetGraph`, `sharedEvaluation`, `legacyFoundationAdapters`)과 테스트 45건, 이벤트 원장 타입을 `src/foundation`에 옮겼어요(내용 동일, import 경로만 변경, 2026-10-03). 남은 것: 이벤트 원장 영속 저장 adapter와 projection(분류표 #2·#3).
+3. 🔶 **M1 foundation 이식:** 1차로 순수 계약 모듈(`canonicalData`, `decisionRunVersionRegistry`, `eventEvidenceLineage`, `marketAssetGraph`, `sharedEvaluation`, `legacyFoundationAdapters`)과 테스트 45건, 이벤트 원장 타입을 `src/foundation`에 옮겼어요(내용 동일, import 경로만 변경, 2026-10-03). 2단계로 이벤트 원장 저장 계약·참조 구현·Supabase REST adapter를 `src/foundation/ledger`에 옮겼어요(잘못된 시각은 "지금"으로 바꾸지 않고 거부). 남은 것: 도메인별 projection(분류표 #3, 해당 도메인 이식 때 함께).
 
 각 PR은 이 문서의 해당 절(§8.2 M0 등)을 근거로 인용해요.
 

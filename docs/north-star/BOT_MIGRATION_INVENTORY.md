@@ -27,7 +27,7 @@
 | # | BOT 경로 | 역할 | 도메인 | 테스트 | 분류 | 이식 위치 | 단계 | 비고 |
 |---|---|---|---|---|---|---|---|---|
 | 1 | `server/foundation/*` | PIT data envelope, Decision Run·Version Registry, event→evidence lineage, asset graph, shared evaluation, legacy adapter | F | 8 / 45 | **KEEP** | `src/foundation` | M1 ✅ (2026-10-03) | 런타임에서 아직 쓰지 않지만 계약 완성도가 높아요. `bor.alpha-read-model.v1` adapter를 이미 갖고 있어요 |
-| 2 | `server/eventLedger.ts`, `eventLedgerHealth`, `eventLedgerLineage`, `canonicalSourceHealth` | canonical event ledger | F | 10 / 36 (3·4 포함) | **KEEP** | `src/foundation/ledger` | M1 | Supabase 접근 계층은 저장소 adapter로 분리 |
+| 2 | `server/eventLedger.ts`, `eventLedgerHealth`, `eventLedgerLineage`, `canonicalSourceHealth` | canonical event ledger | F | 10 / 36 (3·4 포함) | **KEEP** | `src/foundation/ledger` | M1 ✅ (2026-10-03, 저장 adapter·조회) | Supabase 접근 계층은 저장소 adapter로 분리 |
 | 3 | `server/eventLedger*Projection*.ts` | 도메인 출력 → canonical event | F | 위와 공유 | **MODIFY** | 각 도메인 패키지의 `projection/` | M1~M4 | 도메인별로 나눠 해당 단계에서 이식 |
 | 4 | `server/decisionReplay.ts`, `instrumentDecisionLineage.ts`, `eventLedgerForecastCalibration.ts` | replay, 종목별 계보, 예측 보정 | F / B / D | 위와 공유 | **MODIFY** | `src/foundation/replay`, `src/evaluation` | M1, M3 | 게이트웨이에 연결되지 않은 상태. Forecast History(M3)와 합침 |
 | 5 | `server/aiUsageLedger.ts`, `server/openaiCompat.ts` | LLM 비용 원장, OpenAI adapter | F / OPS | 있음 | **KEEP** | `src/foundation/llm` | M2 | 공급자 중립 interface로 감싸기 |
