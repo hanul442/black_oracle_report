@@ -6,7 +6,8 @@
 // BOR EvidencePacket. It never marks outbox rows as sent: delivery state
 // belongs to the consumer that owns it.
 
-import { createEvidencePacket, type EvidencePacket } from '../evidence/evidence.js';
+import { createEvidencePacket, type AssetResolution, type EvidencePacket } from '../evidence/evidence.js';
+import { NarsAssetResolver } from './narsAssetResolver.js';
 
 export const NARS_PACKET_SCHEMA_VERSIONS: readonly string[] = ['1.0', '1.1'];
 
@@ -84,19 +85,21 @@ export function assertNarsEvidencePacket(payload: unknown): asserts payload is N
   if (payload.evidence !== undefined && !Array.isArray(payload.evidence)) throw new Error('NARS_PACKET_EVIDENCE_NOT_ARRAY');
 }
 
-function issuerQuery(packet: NarsEvidencePacketPayload): string {
+function issuerName(packet: NarsEvidencePacketPayload): string | null {
   const entities: unknown[] = Array.isArray(packet.entities) ? packet.entities : [];
   for (const entity of entities) {
     if (isObject(entity) && entity.type === 'ISSUER' && typeof entity.name === 'string' && entity.name.trim()) return entity.name.trim();
   }
-  return packet.event_title;
+  return null;
 }
+
+const DEFAULT_RESOLVER = new NarsAssetResolver();
 
 function text(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function mapArtifact(packet: NarsEvidencePacketPayload, raw: unknown, deliveredAt: string, now: Date): NarsArtifactOutcome {
+function mapArtifact(packet: NarsEvidencePacketPayload, asset: AssetResolution, raw: unknown, deliveredAt: string, now: Date): NarsArtifactOutcome {
   if (!isObject(raw)) return { status: 'SKIPPED', artifactId: '', reason: 'MALFORMED_ARTIFACT' };
   const artifact = raw as Partial<Record<keyof NarsEvidenceArtifact, unknown>>;
   const artifactId = text(artifact.artifact_id);
@@ -120,9 +123,7 @@ function mapArtifact(packet: NarsEvidencePacketPayload, raw: unknown, deliveredA
         sourceVersion: `nars-packet-${packet.schema_version}`,
         publisher,
       },
-      // No canonical asset mapping yet (North Star M2): keep the issuer
-      // explicit instead of guessing a ticker.
-      asset: { status: 'UNRESOLVED', query: issuerQuery(packet), reason: 'NARS_ASSET_MAPPING_PENDING' },
+      asset,
       provenance: {
         retrievalUri: canonicalUrl,
         snapshotRef: artifactKey,
@@ -143,14 +144,15 @@ function mapArtifact(packet: NarsEvidencePacketPayload, raw: unknown, deliveredA
   }
 }
 
-export function mapNarsOutboxRow(row: NarsOutboxRow, now = new Date()): NarsPacketMapping {
+export function mapNarsOutboxRow(row: NarsOutboxRow, now = new Date(), resolver = DEFAULT_RESOLVER): NarsPacketMapping {
   if (!Number.isFinite(Date.parse(row.created_at))) throw new Error('NARS_OUTBOX_INVALID_CREATED_AT');
   const payload = row.payload;
   assertNarsEvidencePacket(payload);
+  const asset = resolver.resolve(issuerName(payload), payload.event_title);
   return {
     outboxId: row.id,
     eventId: payload.event_id,
     eventKey: payload.event_key,
-    outcomes: ((payload.evidence ?? []) as readonly unknown[]).map((artifact) => mapArtifact(payload, artifact, row.created_at, now)),
+    outcomes: ((payload.evidence ?? []) as readonly unknown[]).map((artifact) => mapArtifact(payload, asset, artifact, row.created_at, now)),
   };
 }
