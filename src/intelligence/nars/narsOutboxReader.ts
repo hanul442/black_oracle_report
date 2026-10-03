@@ -7,6 +7,10 @@ import type { NarsOutboxRow } from './narsEvidencePacket.js';
 export const NARS_OUTBOX_TABLE = 'nars_intel_outbox' as const;
 export const NARS_OUTBOX_DESTINATION = 'black_oracle' as const;
 const MAX_PAGE = 500;
+const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** Rows younger than this are not read yet, so transactions still committing cannot be skipped. */
+export const DEFAULT_SETTLE_MS = 120_000;
 
 /** Position after the last row read; (created_at, id) so equal timestamps are never skipped. */
 export interface NarsOutboxCursor {
@@ -16,7 +20,7 @@ export interface NarsOutboxCursor {
 
 export interface NarsOutboxPage {
   rows: NarsOutboxRow[];
-  /** Pass back as `after` to continue; null when the page was empty. */
+  /** Pass back as `after` to continue. An empty page returns the cursor it was given. */
   nextCursor: NarsOutboxCursor | null;
 }
 
@@ -25,6 +29,8 @@ export interface NarsOutboxReaderConfig {
   serviceRoleKey: string;
   fetch?: typeof fetch;
   timeoutMs?: number;
+  settleMs?: number;
+  clock?: () => number;
 }
 
 export class SupabaseNarsOutboxReader {
@@ -48,9 +54,11 @@ export class SupabaseNarsOutboxReader {
     url.searchParams.set('limit', String(Math.max(1, Math.min(MAX_PAGE, Math.trunc(options.limit ?? 100) || 1))));
     if (options.after) {
       const { createdAt, id } = options.after;
-      if (!Number.isFinite(Date.parse(createdAt)) || !/^[0-9a-f-]{36}$/i.test(id)) throw new Error('INVALID_CURSOR');
+      if (!ISO_TIMESTAMP.test(createdAt) || !Number.isFinite(Date.parse(createdAt)) || !UUID.test(id)) throw new Error('INVALID_CURSOR');
       url.searchParams.set('or', `(created_at.gt.${createdAt},and(created_at.eq.${createdAt},id.gt.${id}))`);
     }
+    const settledBefore = new Date((this.config.clock ?? Date.now)() - (this.config.settleMs ?? DEFAULT_SETTLE_MS)).toISOString();
+    url.searchParams.set('created_at', `lt.${settledBefore}`);
     const response = await this.#fetch(url, {
       headers: this.#headers,
       cache: 'no-store',
@@ -64,6 +72,6 @@ export class SupabaseNarsOutboxReader {
       return { id: String(row.id ?? ''), created_at: String(row.created_at ?? ''), payload: row.payload };
     });
     const last = rows.at(-1);
-    return { rows, nextCursor: last ? { createdAt: last.created_at, id: last.id } : null };
+    return { rows, nextCursor: last ? { createdAt: last.created_at, id: last.id } : (options.after ?? null) };
   }
 }

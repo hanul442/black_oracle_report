@@ -10,7 +10,9 @@ function reader(respond: (url: URL) => Response, seen: URL[] = []) {
     seen.push(url);
     return respond(url);
   }) as typeof fetch;
-  return new SupabaseNarsOutboxReader({ baseUrl: 'https://db.example.test', serviceRoleKey: 'k', fetch: fakeFetch });
+  return new SupabaseNarsOutboxReader({
+    baseUrl: 'https://db.example.test', serviceRoleKey: 'k', fetch: fakeFetch, clock: () => Date.parse('2026-10-03T02:00:00Z'),
+  });
 }
 
 test('reads black_oracle rows oldest first and returns a (created_at, id) cursor', async () => {
@@ -23,6 +25,8 @@ test('reads black_oracle rows oldest first and returns a (created_at, id) cursor
   assert.equal(url.searchParams.get('order'), 'created_at.asc,id.asc');
   assert.equal(url.searchParams.get('limit'), '50');
   assert.equal(url.searchParams.get('or'), null);
+  // Only rows at least two minutes old, so in-flight inserts are never skipped.
+  assert.equal(url.searchParams.get('created_at'), 'lt.2026-10-03T01:58:00.000Z');
   assert.deepEqual(page.nextCursor, { createdAt: '2026-10-01T00:00:00+00:00', id: ID_A });
 });
 
@@ -31,12 +35,14 @@ test('continues after a cursor without skipping rows that share its timestamp', 
   const r = reader(() => new Response('[]'), seen);
   const page = await r.readPage({ after: { createdAt: '2026-10-01T00:00:00Z', id: ID_A } });
   assert.equal(seen[0]!.searchParams.get('or'), `(created_at.gt.2026-10-01T00:00:00Z,and(created_at.eq.2026-10-01T00:00:00Z,id.gt.${ID_A}))`);
-  assert.equal(page.nextCursor, null);
+  // An empty page keeps the caller's position instead of resetting it.
+  assert.deepEqual(page.nextCursor, { createdAt: '2026-10-01T00:00:00Z', id: ID_A });
 });
 
 test('rejects malformed cursors and surfaces read failures', async () => {
   const r = reader(() => new Response('down', { status: 503 }));
   await assert.rejects(r.readPage({ after: { createdAt: 'x', id: ID_A } }), /INVALID_CURSOR/);
+  await assert.rejects(r.readPage({ after: { createdAt: 'Oct (a.b,c) 1 2026', id: ID_A } }), /INVALID_CURSOR/);
   await assert.rejects(r.readPage({ after: { createdAt: '2026-10-01T00:00:00Z', id: 'not-a-uuid),or(x' } }), /INVALID_CURSOR/);
   await assert.rejects(r.readPage(), /NARS_OUTBOX_READ_FAILED:503/);
 });

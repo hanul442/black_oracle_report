@@ -85,18 +85,32 @@ export function assertNarsEvidencePacket(payload: unknown): asserts payload is N
 }
 
 function issuerQuery(packet: NarsEvidencePacketPayload): string {
-  const issuer = packet.entities?.find((entity) => entity.type === 'ISSUER')?.name?.trim();
-  return issuer || packet.event_title;
+  const entities: unknown[] = Array.isArray(packet.entities) ? packet.entities : [];
+  for (const entity of entities) {
+    if (isObject(entity) && entity.type === 'ISSUER' && typeof entity.name === 'string' && entity.name.trim()) return entity.name.trim();
+  }
+  return packet.event_title;
 }
 
-function mapArtifact(packet: NarsEvidencePacketPayload, artifact: NarsEvidenceArtifact, deliveredAt: string, now: Date): NarsArtifactOutcome {
-  const artifactId = String(artifact.artifact_id ?? '');
+function text(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function mapArtifact(packet: NarsEvidencePacketPayload, raw: unknown, deliveredAt: string, now: Date): NarsArtifactOutcome {
+  if (!isObject(raw)) return { status: 'SKIPPED', artifactId: '', reason: 'MALFORMED_ARTIFACT' };
+  const artifact = raw as Partial<Record<keyof NarsEvidenceArtifact, unknown>>;
+  const artifactId = text(artifact.artifact_id);
+  if (!artifactId) return { status: 'SKIPPED', artifactId, reason: 'MISSING_ARTIFACT_ID' };
   if (artifact.verification !== 'content_verified') return { status: 'SKIPPED', artifactId, reason: 'NOT_CONTENT_VERIFIED' };
-  if (!artifact.artifact_key?.trim()) return { status: 'SKIPPED', artifactId, reason: 'MISSING_ARTIFACT_KEY' };
-  if (!artifact.canonical_url?.trim()) return { status: 'SKIPPED', artifactId, reason: 'MISSING_CANONICAL_URL' };
-  if (!artifact.published_at) return { status: 'SKIPPED', artifactId, reason: 'MISSING_PUBLISHED_AT' };
-  const publisher = artifact.publisher_key?.trim() || artifact.authority_key?.trim();
+  const artifactKey = text(artifact.artifact_key);
+  if (!artifactKey) return { status: 'SKIPPED', artifactId, reason: 'MISSING_ARTIFACT_KEY' };
+  const canonicalUrl = text(artifact.canonical_url);
+  if (!canonicalUrl) return { status: 'SKIPPED', artifactId, reason: 'MISSING_CANONICAL_URL' };
+  const publishedAt = text(artifact.published_at);
+  if (!publishedAt) return { status: 'SKIPPED', artifactId, reason: 'MISSING_PUBLISHED_AT' };
+  const publisher = text(artifact.publisher_key) || text(artifact.authority_key);
   if (!publisher) return { status: 'SKIPPED', artifactId, reason: 'MISSING_PUBLISHER' };
+  const title = text(artifact.title);
 
   try {
     const evidence = createEvidencePacket({
@@ -110,18 +124,18 @@ function mapArtifact(packet: NarsEvidencePacketPayload, artifact: NarsEvidenceAr
       // explicit instead of guessing a ticker.
       asset: { status: 'UNRESOLVED', query: issuerQuery(packet), reason: 'NARS_ASSET_MAPPING_PENDING' },
       provenance: {
-        retrievalUri: artifact.canonical_url,
-        snapshotRef: artifact.artifact_key,
+        retrievalUri: canonicalUrl,
+        snapshotRef: artifactKey,
         retrievedBy: RETRIEVED_BY,
       },
-      publishedAt: artifact.published_at,
+      publishedAt,
       // BLACK ORACLE can only claim to have known the artifact once NARS
       // delivered it. Artifacts are often attached to an event well after
       // the event was first detected, so first_detected_at would be too early.
       observedAt: deliveredAt,
       // artifact_key already pins the NARS content hash; fingerprinting it
       // gives a stable revision identity for this artifact version.
-      canonicalContent: `${artifact.artifact_key}\n${artifact.title}`,
+      canonicalContent: `${artifactKey}\n${title}`,
     }, now);
     return { status: 'MAPPED', artifactId, evidence };
   } catch (error) {
@@ -137,6 +151,6 @@ export function mapNarsOutboxRow(row: NarsOutboxRow, now = new Date()): NarsPack
     outboxId: row.id,
     eventId: payload.event_id,
     eventKey: payload.event_key,
-    outcomes: (payload.evidence ?? []).map((artifact) => mapArtifact(payload, artifact, row.created_at, now)),
+    outcomes: ((payload.evidence ?? []) as readonly unknown[]).map((artifact) => mapArtifact(payload, artifact, row.created_at, now)),
   };
 }

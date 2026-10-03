@@ -108,3 +108,15 @@ test('an artifact published after the event was detected is still known once del
   const outcome = mapNarsOutboxRow({ id: 'o', created_at: '2026-09-29T06:35:00Z', payload: packet({ evidence: [late] }) }, NOW).outcomes[0];
   assert.equal(outcome?.status, 'MAPPED');
 });
+
+test('one malformed artifact does not stop the rest of the packet', () => {
+  const good = packet().evidence![0]!;
+  const mapping = mapNarsEvidencePacket({
+    ...packet(),
+    entities: { not: 'an array' },
+    evidence: [null, { ...good, artifact_key: 42 }, { ...good, artifact_id: '' }, good],
+  }, NOW);
+  assert.deepEqual(mapping.outcomes.map((o) => o.status === 'SKIPPED' ? o.reason : o.status), [
+    'MALFORMED_ARTIFACT', 'MISSING_ARTIFACT_KEY', 'MISSING_ARTIFACT_ID', 'MAPPED',
+  ]);
+});
