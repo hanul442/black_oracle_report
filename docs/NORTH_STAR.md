@@ -297,7 +297,7 @@ black_oracle_report/
 |---|---|---|
 | M0 ✅ | 저장소 골격: 기존 BOR 코드를 `src/intelligence/{evidence,research,report}`·`src/runtime`으로 이동, 도메인 경계 테스트, CI 테스트 누락 방지 | 기존 BOR 테스트 101건 + 경계 테스트 2건 통과, 런타임 응답 동일 |
 | M1 🔶 | `src/foundation`: canonical data, PIT, Decision Run, Version Registry, event ledger, lineage | BOT 원본 테스트 통과 + BOR 영속 저장 |
-| M2 | `services/nars` + NARS consumer + Evidence 통합(BOR evidence 계약 기준) | v4 shadow 입력 → BOR Evidence 저장 |
+| M2 🔶 | `services/nars` + NARS consumer + Evidence 통합(BOR evidence 계약 기준). 1단계 완료: outbox 패킷(1.0/1.1) → BOR Evidence 변환기와 읽기 전용 outbox 리더(`src/intelligence/nars`, 2026-10-03) | v4 shadow 입력 → BOR Evidence 저장 |
 | M3 | Forecast + **Forecast History**(CT-01 수정, immutable writer/reader) | write → restart → readback, 반례 fixture 통과 |
 | M4 | `src/strategy`·`risk`·`paper`·`evaluation`. 이때 `src/runtime/runtime.ts`의 `findForbiddenTradingEnvironment`를 "PAPER 전용 변수만 허용"으로 좁혀요 | **동일 입력 → BOT와 동일한 판단과 원장 결과**(shadow 비교 7일) |
 | M5 | `web/` 새 IA (§5) | §1.3 S4 사용성 과제 통과 |
