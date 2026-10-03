@@ -296,7 +296,7 @@ black_oracle_report/
 | 단계 | 이식 대상 | 완료 기준 |
 |---|---|---|
 | M0 ✅ | 저장소 골격: 기존 BOR 코드를 `src/intelligence/{evidence,research,report}`·`src/runtime`으로 이동, 도메인 경계 테스트, CI 테스트 누락 방지 | 기존 BOR 테스트 101건 + 경계 테스트 2건 통과, 런타임 응답 동일 |
-| M1 | `src/foundation`: canonical data, PIT, Decision Run, Version Registry, event ledger, lineage | BOT 원본 테스트 통과 + BOR 영속 저장 |
+| M1 🔶 | `src/foundation`: canonical data, PIT, Decision Run, Version Registry, event ledger, lineage | BOT 원본 테스트 통과 + BOR 영속 저장 |
 | M2 | `services/nars` + NARS consumer + Evidence 통합(BOR evidence 계약 기준) | v4 shadow 입력 → BOR Evidence 저장 |
 | M3 | Forecast + **Forecast History**(CT-01 수정, immutable writer/reader) | write → restart → readback, 반례 fixture 통과 |
 | M4 | `src/strategy`·`risk`·`paper`·`evaluation`. 이때 `src/runtime/runtime.ts`의 `findForbiddenTradingEnvironment`를 "PAPER 전용 변수만 허용"으로 좁혀요 | **동일 입력 → BOT와 동일한 판단과 원장 결과**(shadow 비교 7일) |
@@ -416,7 +416,7 @@ Frozen §13(Foundation → Decision Engine → Experience)을 따르되, **한 �
 
 1. ✅ **M0 골격:** BOR 코드를 도메인 폴더로 재배치(동작 불변), 경계 테스트, CI 테스트 누락 방지.
 2. ✅ **C1 History 계약 수정:** [Forecast History Contract v2](contracts/FORECAST_HISTORY_CONTRACT_V2.md)와 참조 구현 `src/intelligence/forecast/forecastHistory.ts`. 실제로 소비한 근거 리비전을 반드시 묶고, CT-01 반례 테스트를 포함해요(2026-10-03).
-3. **M1 foundation 이식 PR:** `server/foundation/*`와 테스트를 이식해요.
+3. 🔶 **M1 foundation 이식:** 1차로 순수 계약 모듈(`canonicalData`, `decisionRunVersionRegistry`, `eventEvidenceLineage`, `marketAssetGraph`, `sharedEvaluation`, `legacyFoundationAdapters`)과 테스트 45건, 이벤트 원장 타입을 `src/foundation`에 옮겼어요(내용 동일, import 경로만 변경, 2026-10-03). 남은 것: 이벤트 원장 영속 저장 adapter와 projection(분류표 #2·#3).
 
 각 PR은 이 문서의 해당 절(§8.2 M0 등)을 근거로 인용해요.
 
