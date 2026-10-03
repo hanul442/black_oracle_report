@@ -310,6 +310,8 @@ black_oracle_report/
 
 아카이브 전까지 BOT `main`은 **버그 수정만** 받아요.
 
+> ⚠️ **2026-10-03 점검:** BOT PAPER 런타임은 2026-09-29 20:30 UTC부터 멈춰 있어요(Railway 앱 404). M4의 "BOT와 7일 shadow 비교"는 Railway 복구 여부가 확인될 때까지 보류예요. 자세한 내용은 [런타임 점검 기록](runtime/2026-10-03-RUNTIME_HEALTH_AUDIT.md) F1이에요.
+
 ---
 
 ## 9. 빌드 순서: Walking Skeleton 우선
@@ -413,7 +415,7 @@ Frozen §13(Foundation → Decision Engine → Experience)을 따르되, **한 �
 ## 13. 다음 구현 작업
 
 1. ✅ **M0 골격:** BOR 코드를 도메인 폴더로 재배치(동작 불변), 경계 테스트, CI 테스트 누락 방지.
-2. **C1 History 계약 수정:** `FORECAST_HISTORY_CONTRACT_V1` CT-01. "실제로 소비한 Evidence revision"을 바인딩하도록 고치고 반례 fixture를 추가해요.
+2. ✅ **C1 History 계약 수정:** [Forecast History Contract v2](contracts/FORECAST_HISTORY_CONTRACT_V2.md)와 참조 구현 `src/intelligence/forecast/forecastHistory.ts`. 실제로 소비한 근거 리비전을 반드시 묶고, CT-01 반례 테스트를 포함해요(2026-10-03).
 3. **M1 foundation 이식 PR:** `server/foundation/*`와 테스트를 이식해요.
 
 각 PR은 이 문서의 해당 절(§8.2 M0 등)을 근거로 인용해요.
