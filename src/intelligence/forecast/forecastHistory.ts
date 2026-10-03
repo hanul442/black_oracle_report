@@ -118,7 +118,7 @@ function frozenCopy<T>(value: T): T {
 }
 
 /** Key-order-independent identity used to recognise an identical re-write. */
-function canonicalJson(value: unknown): string {
+export function canonicalJson(value: unknown): string {
   return JSON.stringify(value, (_key, v: unknown) => {
     if (typeof v === 'bigint') return `bigint:${v.toString()}`;
     if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
